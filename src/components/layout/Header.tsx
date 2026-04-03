@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Moon, Sun, Monitor, LogOut } from "lucide-react";
+import { Moon, Sun, Monitor, LogOut, ClipboardList } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,8 +33,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 h-16 border-b border-[hsl(var(--border))] bg-[hsl(var(--card))]/95 backdrop-blur supports-[backdrop-filter]:bg-[hsl(var(--card))]/60">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
-        <div className="flex items-center gap-2 lg:hidden">
-          <span className="font-semibold text-lg">CaseLog</span>
+        <div className="flex items-center gap-2.5 lg:hidden">
+          <div className="w-7 h-7 rounded-lg bg-[hsl(var(--primary))] flex items-center justify-center">
+            <ClipboardList className="h-3.5 w-3.5 text-white" />
+          </div>
+          <span className="font-bold text-lg tracking-tight">CaseLog</span>
         </div>
         <div className="hidden lg:block" />
 

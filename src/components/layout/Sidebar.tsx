@@ -26,9 +26,11 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:flex flex-col w-60 border-r border-[hsl(var(--border))] bg-[hsl(var(--card))] h-screen sticky top-0">
-      <div className="flex items-center gap-2 px-6 h-16 border-b border-[hsl(var(--border))]">
-        <ClipboardList className="h-6 w-6 text-[hsl(var(--primary))]" />
-        <span className="font-semibold text-lg">CaseLog</span>
+      <div className="flex items-center gap-2.5 px-6 h-16 border-b border-[hsl(var(--border))]">
+        <div className="w-8 h-8 rounded-lg bg-[hsl(var(--primary))] flex items-center justify-center">
+          <ClipboardList className="h-4 w-4 text-white" />
+        </div>
+        <span className="font-bold text-lg tracking-tight">CaseLog</span>
       </div>
       <nav className="flex-1 py-4 px-3 space-y-1">
         {allItems.map((item) => (
@@ -37,9 +39,9 @@ export function Sidebar() {
             to={item.to}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"
+                  ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-sm"
                   : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]",
               )
             }
@@ -49,6 +51,11 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+      <div className="px-4 py-3 border-t border-[hsl(var(--border))]">
+        <p className="text-[10px] text-[hsl(var(--muted-foreground))] text-center">
+          Patient Case Tracker
+        </p>
+      </div>
     </aside>
   );
 }

@@ -44,7 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         // Check if doctor profile exists
         let doc = await getDoctor(firebaseUser.uid);
-        const isDemo = firebaseUser.isAnonymous;
+        const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+        const isDemo = !!demoEmail && firebaseUser.email === demoEmail;
         const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
         const shouldBeAdmin =
           !isDemo && !!adminEmail && firebaseUser.email === adminEmail;

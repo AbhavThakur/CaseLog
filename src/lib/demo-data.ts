@@ -1,4 +1,6 @@
 import { createCase, addTimelineEntry, getDashboardStats } from "./firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db, col } from "./firebase";
 
 const SAMPLE_CASES = [
   {
@@ -80,9 +82,17 @@ const SAMPLE_ENTRIES = [
 ];
 
 export async function seedDemoData(doctorId: string): Promise<void> {
-  // Check if demo data already exists
+  // Use a Firestore flag to prevent duplicate seeding (race-safe)
+  const seedRef = doc(db, col("doctors"), doctorId, "meta", "demo_seed");
+  const seedSnap = await getDoc(seedRef);
+  if (seedSnap.exists()) return; // Already seeded
+
+  // Mark as seeded immediately to block concurrent tabs
+  await setDoc(seedRef, { seededAt: new Date().toISOString() });
+
+  // Double-check: if cases already exist, skip
   const stats = await getDashboardStats(doctorId);
-  if (stats.totalCases > 0) return; // Already seeded
+  if (stats.totalCases > 0) return;
 
   // Create sample cases
   for (let i = 0; i < SAMPLE_CASES.length; i++) {

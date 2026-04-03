@@ -11,6 +11,16 @@
   --color-primary-600: #2563eb;
   --color-primary-700: #1d4ed8;
 
+  /* Glassmorphism — Deep Medical Night palette */
+  --color-med-night: #0f172a;
+  --color-med-night-light: #1e293b;
+  --color-hyper-blue: #00d1ff;
+  --color-hyper-blue-dim: #00a3cc;
+  --color-emergency-ruby: #ff3131;
+  --color-med-glass: rgba(255, 255, 255, 0.06);
+  --color-med-glass-border: rgba(255, 255, 255, 0.12);
+  --color-med-glass-strong: rgba(255, 255, 255, 0.1);
+
   --color-status-active: #22c55e;
   --color-status-warning: #f59e0b;
   --color-status-critical: #ef4444;
@@ -159,4 +169,50 @@
 }
 @utility ring-ring {
   --tw-ring-color: hsl(var(--ring));
+}
+
+/* ── Glassmorphism utilities ── */
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 4px 24px -4px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+@utility glass-card-strong {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    0 8px 32px -8px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@utility glass-card-light {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+    0 4px 24px -4px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+@utility glow-blue {
+  box-shadow:
+    0 0 20px rgba(0, 209, 255, 0.15),
+    0 0 40px rgba(0, 209, 255, 0.05);
+}
+
+@utility glow-ruby {
+  box-shadow:
+    0 0 20px rgba(255, 49, 49, 0.2),
+    0 0 40px rgba(255, 49, 49, 0.08);
 }

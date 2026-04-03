@@ -1,6 +1,6 @@
 import {
   signInWithPopup,
-  signInAnonymously,
+  signInWithEmailAndPassword,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
@@ -16,7 +16,12 @@ export async function signInWithGoogle(): Promise<User> {
 }
 
 export async function signInAsDemo(): Promise<User> {
-  const result = await signInAnonymously(auth);
+  const email = import.meta.env.VITE_DEMO_EMAIL;
+  const password = import.meta.env.VITE_DEMO_PASSWORD;
+  if (!email || !password) {
+    throw new Error("Demo account not configured");
+  }
+  const result = await signInWithEmailAndPassword(auth, email, password);
   return result.user;
 }
 

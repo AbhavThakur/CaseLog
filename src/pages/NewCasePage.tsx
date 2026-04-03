@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, User, Stethoscope, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,19 +81,37 @@ export default function NewCasePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 pb-8">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-xl"
+          onClick={() => navigate(-1)}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">New Patient Case</h1>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            New Patient Case
+          </h1>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Enter patient and admission details
+          </p>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Patient Demographics */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Patient Demographics</CardTitle>
+        <Card className="rounded-xl overflow-hidden">
+          <div className="h-1 bg-blue-500" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </div>
+              Patient Demographics
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,9 +202,15 @@ export default function NewCasePage() {
         </Card>
 
         {/* Admission Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Admission Details</CardTitle>
+        <Card className="rounded-xl overflow-hidden">
+          <div className="h-1 bg-emerald-500" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                <Stethoscope className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              Admission Details
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Visit Type */}
@@ -275,9 +299,15 @@ export default function NewCasePage() {
         </Card>
 
         {/* Tags */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Tags</CardTitle>
+        <Card className="rounded-xl overflow-hidden">
+          <div className="h-1 bg-amber-500" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                <Tag className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              </div>
+              Tags
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -296,10 +326,15 @@ export default function NewCasePage() {
 
         {/* Submit */}
         <div className="flex gap-3 justify-end">
-          <Button type="button" variant="outline" onClick={() => navigate(-1)}>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-xl"
+            onClick={() => navigate(-1)}
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" className="rounded-xl" disabled={submitting}>
             {submitting ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
             ) : null}

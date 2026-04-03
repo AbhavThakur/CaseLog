@@ -333,24 +333,65 @@ export function subscribeToVitals(
 
 // ─── Stats ───
 
-export async function getDashboardStats(doctorId: string): Promise<{
+export interface DashboardStats {
   activeCases: number;
   totalCases: number;
   todayEntries: number;
   caseStudies: number;
-}> {
+  followUpCases: number;
+  dischargedCases: number;
+  criticalEntriesToday: number;
+  thisWeekNewCases: number;
+  thisMonthNewCases: number;
+  lastEntryTime: Date | null;
+  recentActivity: {
+    caseId: string;
+    caseNumber: string;
+    patientName: string;
+    entryTitle: string;
+    entryType: string;
+    time: Date;
+  }[];
+}
+
+export async function getDashboardStats(
+  doctorId: string,
+): Promise<DashboardStats> {
   const casesSnap = await getDocs(casesRef(doctorId));
-  const cases = casesSnap.docs.map((d) => d.data() as PatientCase);
+  const cases = casesSnap.docs.map(
+    (d) => ({ ...d.data(), id: d.id }) as PatientCase,
+  );
 
   const activeCases = cases.filter((c) => c.status === "active").length;
+  const followUpCases = cases.filter((c) => c.status === "follow-up").length;
+  const dischargedCases = cases.filter((c) => c.status === "discharged").length;
   const caseStudies = cases.filter((c) => c.isCaseStudy).length;
 
-  const today = new Date();
+  const now = new Date();
+  const today = new Date(now);
   today.setHours(0, 0, 0, 0);
   const todayTimestamp = Timestamp.fromDate(today);
 
+  const weekAgo = new Date(now);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const thisWeekNewCases = cases.filter(
+    (c) => c.createdAt && c.createdAt.toDate() >= weekAgo,
+  ).length;
+  const thisMonthNewCases = cases.filter(
+    (c) => c.createdAt && c.createdAt.toDate() >= monthStart,
+  ).length;
+
   let todayEntries = 0;
+  let criticalEntriesToday = 0;
+  let lastEntryTime: Date | null = null;
+  const recentActivity: DashboardStats["recentActivity"] = [];
+
   for (const caseDoc of casesSnap.docs) {
+    const caseData = caseDoc.data() as PatientCase;
+
     const entriesSnap = await getDocs(
       query(
         collection(
@@ -365,13 +406,41 @@ export async function getDashboardStats(doctorId: string): Promise<{
       ),
     );
     todayEntries += entriesSnap.size;
+
+    for (const entryDoc of entriesSnap.docs) {
+      const entry = entryDoc.data();
+      if (entry.priority === "critical") criticalEntriesToday++;
+      const entryTime = entry.createdAt?.toDate?.() ?? new Date();
+      if (!lastEntryTime || entryTime > lastEntryTime) {
+        lastEntryTime = entryTime;
+      }
+      recentActivity.push({
+        caseId: caseDoc.id,
+        caseNumber: caseData.caseNumber ?? "",
+        patientName: caseData.patient?.name ?? "",
+        entryTitle: entry.title ?? "",
+        entryType: entry.type ?? "note",
+        time: entryTime,
+      });
+    }
   }
+
+  // Sort recent activity by time desc, keep top 5
+  recentActivity.sort((a, b) => b.time.getTime() - a.time.getTime());
+  recentActivity.splice(5);
 
   return {
     activeCases,
     totalCases: cases.length,
     todayEntries,
     caseStudies,
+    followUpCases,
+    dischargedCases,
+    criticalEntriesToday,
+    thisWeekNewCases,
+    thisMonthNewCases,
+    lastEntryTime,
+    recentActivity,
   };
 }
 
