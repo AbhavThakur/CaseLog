@@ -54,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await createOrUpdateDoctor(firebaseUser.uid, {
             email: firebaseUser.email ?? (isDemo ? "demo@caselog.app" : ""),
             displayName: firebaseUser.displayName ?? (isDemo ? "Dr. Demo" : ""),
-            ...(firebaseUser.photoURL ? { photoURL: firebaseUser.photoURL } : {}),
+            ...(firebaseUser.photoURL
+              ? { photoURL: firebaseUser.photoURL }
+              : {}),
             specialization: isDemo ? "General Medicine" : "",
             hospital: isDemo ? "CaseLog Demo Hospital" : "",
             practiceType: isDemo ? "both" : "hospital",
