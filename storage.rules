@@ -1,0 +1,24 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Prod: cases files — only the doctor who owns the case path
+    match /cases/{doctorId}/{allPaths=**} {
+      allow read: if request.auth != null
+                  && request.auth.uid == doctorId;
+      allow write: if request.auth != null
+                   && request.auth.uid == doctorId
+                   && request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*|application/pdf');
+    }
+
+    // Dev: dev_cases files — same rules, prefixed path
+    match /dev_cases/{doctorId}/{allPaths=**} {
+      allow read: if request.auth != null
+                  && request.auth.uid == doctorId;
+      allow write: if request.auth != null
+                   && request.auth.uid == doctorId
+                   && request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*|application/pdf');
+    }
+  }
+}
