@@ -65,6 +65,7 @@ export async function createCase(
   data: {
     patient: PatientCase["patient"];
     admission: Omit<PatientCase["admission"], "date">;
+    investigations?: PatientCase["investigations"];
     tags?: string[];
   },
 ): Promise<string> {
@@ -89,6 +90,7 @@ export async function createCase(
   const docRef = await addDoc(casesRef(doctorId), {
     patient: data.patient,
     admission: { ...data.admission, date: Timestamp.now() },
+    ...(data.investigations ? { investigations: data.investigations } : {}),
     tags: data.tags ?? [],
     status: "active",
     isCaseStudy: false,
@@ -734,9 +736,7 @@ export async function createShareLink(
   return docRef.id;
 }
 
-export async function getSharedCase(
-  shareId: string,
-): Promise<{
+export async function getSharedCase(shareId: string): Promise<{
   case: PatientCase;
   timeline: TimelineEntry[];
   sharedBy: string;

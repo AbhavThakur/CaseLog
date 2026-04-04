@@ -1,9 +1,17 @@
 import { useNavigate, Navigate } from "react-router";
-import { ClipboardList, Shield, Wifi, Smartphone, Heart } from "lucide-react";
+import {
+  ClipboardList,
+  Shield,
+  Wifi,
+  Smartphone,
+  Heart,
+  Download,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle, signInAsDemo } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -11,6 +19,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
+  const { canInstall, install } = usePwaInstall();
 
   if (loading) {
     return (
@@ -576,6 +585,16 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-[hsl(var(--border))]">
+            {canInstall && (
+              <Button
+                variant="outline"
+                className="w-full rounded-xl mb-4 border-dashed"
+                onClick={install}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Install CaseLog App
+              </Button>
+            )}
             <p className="text-xs text-center text-[hsl(var(--muted-foreground))] leading-relaxed">
               Secure sign-in powered by Firebase Authentication.
               <br />

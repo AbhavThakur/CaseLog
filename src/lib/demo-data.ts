@@ -10,6 +10,9 @@ const SAMPLE_CASES = [
       gender: "male" as const,
       bloodGroup: "B+" as const,
       phone: "9876543210",
+      smokingStatus: "current" as const,
+      clinicalHistory:
+        "Known hypertensive on Amlodipine 5mg. Family Hx of CAD. No DM.",
     },
     admission: {
       chiefComplaint: "Chest pain and shortness of breath for 2 days",
@@ -17,6 +20,13 @@ const SAMPLE_CASES = [
       visitType: "ipd" as const,
       ward: "Cardiology ICU",
       roomNumber: "ICU-04",
+    },
+    investigations: {
+      chestXrayFindings: "Bilateral hilar prominence, cardiomegaly",
+      ctFindings: "CTPA negative for PE. Mild pericardial effusion noted.",
+      interventionDone: "Coronary angiography via right radial approach",
+      procedureFindings:
+        "90% stenosis in LAD mid-segment. Stented with DES 3.0x28mm.",
     },
     tags: ["cardiac", "urgent"],
   },
@@ -26,6 +36,8 @@ const SAMPLE_CASES = [
       age: 32,
       gender: "female" as const,
       bloodGroup: "O+" as const,
+      smokingStatus: "never" as const,
+      clinicalHistory: "No known comorbidities. G2P1L1. Last LMP 2 weeks ago.",
     },
     admission: {
       chiefComplaint: "High-grade fever with joint pain for 5 days",
@@ -43,11 +55,22 @@ const SAMPLE_CASES = [
       age: 58,
       gender: "male" as const,
       bloodGroup: "A+" as const,
+      smokingStatus: "former" as const,
+      clinicalHistory:
+        "Ex-smoker (20 pack-years, quit 5 yrs ago). COPD on inhalers. Type 2 DM on Metformin.",
     },
     admission: {
       chiefComplaint: "Progressive difficulty walking, numbness in legs",
       initialDiagnosis: "Lumbar Canal Stenosis",
       visitType: "opd" as const,
+    },
+    investigations: {
+      ctFindings:
+        "HRCT chest: centrilobular emphysema upper lobes, mild bronchial wall thickening",
+      balReport:
+        "BAL fluid: 60% macrophages, 20% lymphocytes. No malignant cells. AFB negative.",
+      histopathReport:
+        "Transbronchial biopsy: chronic inflammation with fibrosis. No granulomas.",
     },
     tags: ["ortho", "elective"],
   },

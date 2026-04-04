@@ -10,6 +10,8 @@ export const patientSchema = z.object({
     .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
     .optional(),
   phone: z.string().optional(),
+  smokingStatus: z.enum(["current", "former", "never"]).optional(),
+  clinicalHistory: z.string().optional(),
   emergencyContact: z
     .object({
       name: z.string(),
@@ -30,9 +32,19 @@ export const admissionSchema = z.object({
   roomNumber: z.string().optional(),
 });
 
+export const investigationsSchema = z.object({
+  chestXrayFindings: z.string().optional(),
+  ctFindings: z.string().optional(),
+  interventionDone: z.string().optional(),
+  procedureFindings: z.string().optional(),
+  balReport: z.string().optional(),
+  histopathReport: z.string().optional(),
+});
+
 export const newCaseSchema = z.object({
   patient: patientSchema,
   admission: admissionSchema,
+  investigations: investigationsSchema.optional(),
   tags: z.string().optional(),
 });
 

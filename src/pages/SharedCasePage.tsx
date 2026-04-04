@@ -126,7 +126,14 @@ export default function SharedCasePage() {
                 </h1>
                 <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
                   {p.age} years · {p.gender} · {p.bloodGroup ?? "—"}
+                  {p.smokingStatus &&
+                    ` · 🚬 ${p.smokingStatus === "current" ? "Current Smoker" : p.smokingStatus === "former" ? "Former Smoker" : "Never Smoked"}`}
                 </p>
+                {p.clinicalHistory && (
+                  <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
+                    <span className="font-medium">Hx:</span> {p.clinicalHistory}
+                  </p>
+                )}
               </div>
               <div className="flex flex-wrap gap-2">
                 <Badge
@@ -198,6 +205,80 @@ export default function SharedCasePage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Investigations & Reports */}
+        {caseData.investigations &&
+          Object.values(caseData.investigations).some(Boolean) && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">
+                  Investigations & Reports
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                {caseData.investigations.chestXrayFindings && (
+                  <div>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-wider font-medium">
+                      Chest X-ray
+                    </p>
+                    <p className="text-sm mt-1">
+                      {caseData.investigations.chestXrayFindings}
+                    </p>
+                  </div>
+                )}
+                {caseData.investigations.ctFindings && (
+                  <div>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-wider font-medium">
+                      CT Findings
+                    </p>
+                    <p className="text-sm mt-1">
+                      {caseData.investigations.ctFindings}
+                    </p>
+                  </div>
+                )}
+                {caseData.investigations.interventionDone && (
+                  <div>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-wider font-medium">
+                      Intervention Done
+                    </p>
+                    <p className="text-sm mt-1">
+                      {caseData.investigations.interventionDone}
+                    </p>
+                  </div>
+                )}
+                {caseData.investigations.procedureFindings && (
+                  <div>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-wider font-medium">
+                      Procedure Findings
+                    </p>
+                    <p className="text-sm mt-1">
+                      {caseData.investigations.procedureFindings}
+                    </p>
+                  </div>
+                )}
+                {caseData.investigations.balReport && (
+                  <div>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-wider font-medium">
+                      BAL Report
+                    </p>
+                    <p className="text-sm mt-1">
+                      {caseData.investigations.balReport}
+                    </p>
+                  </div>
+                )}
+                {caseData.investigations.histopathReport && (
+                  <div>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] uppercase tracking-wider font-medium">
+                      Histopathology Report
+                    </p>
+                    <p className="text-sm mt-1">
+                      {caseData.investigations.histopathReport}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
         {/* Discharge Summary */}
         {d && (

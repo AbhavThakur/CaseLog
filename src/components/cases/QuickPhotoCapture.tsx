@@ -134,16 +134,12 @@ export function QuickPhotoCapture({ caseId }: QuickPhotoCaptureProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              size="lg"
-              className="h-14 w-14 rounded-full shadow-lg"
+              size="icon"
+              className="h-14 w-14 rounded-full shadow-lg [&_svg]:!h-6 [&_svg]:!w-6"
               disabled={uploading}
               aria-label="Quick upload"
             >
-              {uploading ? (
-                <Loader2 className="h-6 w-6 animate-spin" />
-              ) : (
-                <Camera className="h-6 w-6" />
-              )}
+              {uploading ? <Loader2 className="animate-spin" /> : <Camera />}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" className="w-48">

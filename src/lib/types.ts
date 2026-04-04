@@ -24,6 +24,8 @@ export interface PatientCase {
     gender: "male" | "female" | "other";
     bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
     phone?: string;
+    smokingStatus?: "current" | "former" | "never";
+    clinicalHistory?: string;
     emergencyContact?: {
       name: string;
       phone: string;
@@ -39,6 +41,18 @@ export interface PatientCase {
     ward?: string;
     roomNumber?: string;
   };
+  investigations?: {
+    chestXrayFindings?: string;
+    ctFindings?: string;
+    interventionDone?: string;
+    procedureFindings?: string;
+    balReport?: string;
+    histopathReport?: string;
+  };
+  followUps?: {
+    date: Timestamp;
+    notes: string;
+  }[];
   discharge?: {
     date: Timestamp;
     finalDiagnosis: string;

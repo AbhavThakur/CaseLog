@@ -341,7 +341,23 @@ export default function CaseDetailPage() {
                         {patientCase.patient.phone}
                       </span>
                     )}
+                    {patientCase.patient.smokingStatus && (
+                      <span className="flex items-center gap-1">
+                        🚬{" "}
+                        {patientCase.patient.smokingStatus === "current"
+                          ? "Current Smoker"
+                          : patientCase.patient.smokingStatus === "former"
+                            ? "Former Smoker"
+                            : "Never Smoked"}
+                      </span>
+                    )}
                   </div>
+                  {patientCase.patient.clinicalHistory && (
+                    <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1.5 line-clamp-2">
+                      <span className="font-medium">Hx:</span>{" "}
+                      {patientCase.patient.clinicalHistory}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -766,6 +782,101 @@ export default function CaseDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Investigations & Reports ── */}
+      {patientCase.investigations &&
+        Object.values(patientCase.investigations).some(Boolean) && (
+          <Card className="border-violet-200 dark:border-violet-800/40 overflow-hidden">
+            <div className="h-1 bg-violet-500" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                Investigations & Reports
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              {patientCase.investigations.chestXrayFindings && (
+                <div className="p-3 rounded-xl bg-violet-50/50 dark:bg-violet-950/10">
+                  <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
+                    Chest X-ray
+                  </p>
+                  <p>{patientCase.investigations.chestXrayFindings}</p>
+                </div>
+              )}
+              {patientCase.investigations.ctFindings && (
+                <div className="p-3 rounded-xl bg-violet-50/50 dark:bg-violet-950/10">
+                  <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
+                    CT Findings
+                  </p>
+                  <p>{patientCase.investigations.ctFindings}</p>
+                </div>
+              )}
+              {patientCase.investigations.interventionDone && (
+                <div className="p-3 rounded-xl bg-violet-50/50 dark:bg-violet-950/10">
+                  <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
+                    Intervention Done
+                  </p>
+                  <p>{patientCase.investigations.interventionDone}</p>
+                </div>
+              )}
+              {patientCase.investigations.procedureFindings && (
+                <div className="p-3 rounded-xl bg-violet-50/50 dark:bg-violet-950/10">
+                  <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
+                    Procedure Findings
+                  </p>
+                  <p>{patientCase.investigations.procedureFindings}</p>
+                </div>
+              )}
+              {patientCase.investigations.balReport && (
+                <div className="p-3 rounded-xl bg-violet-50/50 dark:bg-violet-950/10">
+                  <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
+                    BAL Report
+                  </p>
+                  <p>{patientCase.investigations.balReport}</p>
+                </div>
+              )}
+              {patientCase.investigations.histopathReport && (
+                <div className="p-3 rounded-xl bg-violet-50/50 dark:bg-violet-950/10">
+                  <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
+                    Histopathology Report
+                  </p>
+                  <p>{patientCase.investigations.histopathReport}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+      {/* ── Follow-Up Visits ── */}
+      {patientCase.followUps && patientCase.followUps.length > 0 && (
+        <Card className="border-teal-200 dark:border-teal-800/40 overflow-hidden">
+          <div className="h-1 bg-teal-500" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              Follow-Up Visits ({patientCase.followUps.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            {patientCase.followUps.map((fu, i) => (
+              <div
+                key={i}
+                className="p-3 rounded-xl bg-teal-50/50 dark:bg-teal-950/10 flex gap-3"
+              >
+                <span className="shrink-0 w-6 h-6 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-xs font-bold flex items-center justify-center">
+                  {i + 1}
+                </span>
+                <div>
+                  <p className="text-[10px] font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-0.5">
+                    {fu.date?.toDate
+                      ? fu.date.toDate().toLocaleDateString()
+                      : "—"}
+                  </p>
+                  <p>{fu.notes}</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       )}
 
       {/* ── Discharge Summary ── */}

@@ -1,7 +1,14 @@
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, User, Stethoscope, Tag } from "lucide-react";
+import {
+  ArrowLeft,
+  User,
+  Stethoscope,
+  Tag,
+  FlaskConical,
+  Cigarette,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,6 +67,7 @@ export default function NewCasePage() {
       const caseId = await createCase(user.uid, {
         patient: data.patient,
         admission: data.admission,
+        investigations: data.investigations,
         tags,
       });
 
@@ -198,6 +206,43 @@ export default function NewCasePage() {
                 {...register("patient.phone")}
               />
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1.5">
+                  <Cigarette className="h-3.5 w-3.5" />
+                  Smoking Status
+                </Label>
+                <Select
+                  value={watch("patient.smokingStatus") ?? ""}
+                  onValueChange={(v) =>
+                    setValue(
+                      "patient.smokingStatus",
+                      v as "current" | "former" | "never",
+                    )
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select smoking status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="current">Current Smoker</SelectItem>
+                    <SelectItem value="former">Former Smoker</SelectItem>
+                    <SelectItem value="never">Never Smoked</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="clinicalHistory">Clinical History</Label>
+              <Textarea
+                id="clinicalHistory"
+                placeholder="Past medical history, comorbidities, surgeries, etc."
+                rows={3}
+                {...register("patient.clinicalHistory")}
+              />
+            </div>
           </CardContent>
         </Card>
 
@@ -294,6 +339,85 @@ export default function NewCasePage() {
                 placeholder="Referring doctor (optional)"
                 {...register("admission.referredBy")}
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Investigations & Reports */}
+        <Card className="rounded-xl overflow-hidden">
+          <div className="h-1 bg-violet-500" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30">
+                <FlaskConical className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              </div>
+              Investigations & Reports
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="chestXrayFindings">Chest X-ray Findings</Label>
+                <Textarea
+                  id="chestXrayFindings"
+                  placeholder="Describe chest X-ray findings"
+                  rows={2}
+                  {...register("investigations.chestXrayFindings")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ctFindings">CT Findings</Label>
+                <Textarea
+                  id="ctFindings"
+                  placeholder="Describe CT scan findings"
+                  rows={2}
+                  {...register("investigations.ctFindings")}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="interventionDone">Intervention Done</Label>
+                <Textarea
+                  id="interventionDone"
+                  placeholder="Describe the intervention / procedure performed"
+                  rows={2}
+                  {...register("investigations.interventionDone")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="procedureFindings">
+                  Image & Findings of Procedure
+                </Label>
+                <Textarea
+                  id="procedureFindings"
+                  placeholder="Describe procedure findings"
+                  rows={2}
+                  {...register("investigations.procedureFindings")}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="balReport">BAL Report</Label>
+                <Textarea
+                  id="balReport"
+                  placeholder="Bronchoalveolar lavage report findings"
+                  rows={2}
+                  {...register("investigations.balReport")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="histopathReport">Histopathology Report</Label>
+                <Textarea
+                  id="histopathReport"
+                  placeholder="Histopathology report findings"
+                  rows={2}
+                  {...register("investigations.histopathReport")}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

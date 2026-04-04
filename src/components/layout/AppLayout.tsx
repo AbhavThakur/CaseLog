@@ -1,12 +1,23 @@
+import { useState } from "react";
 import { Outlet, Navigate } from "react-router";
 import { Sidebar, MobileNav } from "./Sidebar";
 import { Header } from "./Header";
 import { useAuth } from "@/hooks/useAuth";
 import { Toaster } from "@/components/ui/toaster";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { InstallBanner } from "@/components/InstallBanner";
+import { Onboarding } from "@/components/Onboarding";
 
 export function AppLayout() {
   const { user, loading } = useAuth();
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => !!user && !localStorage.getItem("onboarding-complete"),
+  );
+
+  const completeOnboarding = () => {
+    setShowOnboarding(false);
+    localStorage.setItem("onboarding-complete", "1");
+  };
 
   if (loading) {
     return (
@@ -31,7 +42,9 @@ export function AppLayout() {
         </main>
       </div>
       <MobileNav />
+      <InstallBanner />
       <Toaster />
+      {showOnboarding && <Onboarding onComplete={completeOnboarding} />}
     </div>
   );
 }
