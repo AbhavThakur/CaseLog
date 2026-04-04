@@ -64,6 +64,15 @@ service cloud.firestore {
       }
     }
 
+    // Shared cases (public read for shared links, authenticated write)
+    match /shared_cases/{shareId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.doctorId == request.auth.uid;
+      allow delete: if request.auth != null
+        && resource.data.doctorId == request.auth.uid;
+    }
+
     // ─── DEV collections (dev_ prefix) ───
 
     match /dev_counters/{counterId} {
@@ -96,6 +105,15 @@ service cloud.firestore {
       match /reminders/{reminderId} {
         allow read, write: if request.auth != null && request.auth.uid == doctorId;
       }
+    }
+
+    // Dev shared cases
+    match /dev_shared_cases/{shareId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.doctorId == request.auth.uid;
+      allow delete: if request.auth != null
+        && resource.data.doctorId == request.auth.uid;
     }
   }
 }

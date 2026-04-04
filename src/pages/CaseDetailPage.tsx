@@ -130,9 +130,12 @@ export default function CaseDetailPage() {
         title: "Link copied!",
         description: "Read-only link valid for 30 days. Copied to clipboard.",
       });
-    } catch {
+    } catch (err) {
+      console.error("Share link error:", err);
       toast({
         title: "Failed to create share link",
+        description:
+          err instanceof Error ? err.message : "Unknown error occurred",
         variant: "destructive",
       });
     } finally {

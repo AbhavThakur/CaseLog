@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   getDoc,
@@ -709,16 +710,28 @@ export async function createShareLink(
   doctorName: string,
   expiresInDays?: number,
 ): Promise<string> {
-  // Check if a share link already exists
-  const q = query(
-    collection(db, col("shared_cases")),
-    where("doctorId", "==", doctorId),
-    where("caseId", "==", caseId),
-  );
-  const existing = await getDocs(q);
-  if (!existing.empty) {
-    return existing.docs[0]!.id;
+  // Use a deterministic ID to avoid needing a compound query index
+  const shareId = `${doctorId}_${caseId}`;
+  const shareRef = doc(db, col("shared_cases"), shareId);
+
+  const existing = await getDoc(shareRef);
+  if (existing.exists()) {
+    return shareId;
   }
+
+  // Snapshot the case data so shared links work without auth
+  const caseSnap = await getDoc(
+    doc(db, col("doctors"), doctorId, "cases", caseId),
+  );
+  if (!caseSnap.exists()) throw new Error("Case not found");
+
+  const timelineSnap = await getDocs(
+    query(
+      collection(db, col("doctors"), doctorId, "cases", caseId, "timeline"),
+      orderBy("entryDate", "desc"),
+    ),
+  );
+  const timeline = timelineSnap.docs.map((d) => ({ ...d.data(), id: d.id }));
 
   const expiresAt = expiresInDays
     ? Timestamp.fromDate(
@@ -726,14 +739,16 @@ export async function createShareLink(
       )
     : null;
 
-  const docRef = await addDoc(collection(db, col("shared_cases")), {
+  await setDoc(shareRef, {
     doctorId,
     caseId,
     doctorName,
     expiresAt,
+    caseData: { ...caseSnap.data(), id: caseSnap.id },
+    timeline,
     createdAt: serverTimestamp(),
   });
-  return docRef.id;
+  return shareId;
 }
 
 export async function getSharedCase(shareId: string): Promise<{
@@ -744,7 +759,7 @@ export async function getSharedCase(shareId: string): Promise<{
   const shareSnap = await getDoc(doc(db, col("shared_cases"), shareId));
   if (!shareSnap.exists()) return null;
 
-  const shareData = shareSnap.data() as SharedCaseData;
+  const shareData = shareSnap.data();
 
   // Check expiry
   if (shareData.expiresAt) {
@@ -752,29 +767,11 @@ export async function getSharedCase(shareId: string): Promise<{
     if (expires < new Date()) return null;
   }
 
-  const caseSnap = await getDoc(
-    doc(db, col("doctors"), shareData.doctorId, "cases", shareData.caseId),
-  );
-  if (!caseSnap.exists()) return null;
+  // Read from the snapshot embedded in the shared doc (no auth needed)
+  const caseData = shareData.caseData as PatientCase;
+  const timeline = (shareData.timeline ?? []) as TimelineEntry[];
 
-  const caseData = { ...caseSnap.data(), id: caseSnap.id } as PatientCase;
-
-  const timelineSnap = await getDocs(
-    query(
-      collection(
-        db,
-        col("doctors"),
-        shareData.doctorId,
-        "cases",
-        shareData.caseId,
-        "timeline",
-      ),
-      orderBy("entryDate", "desc"),
-    ),
-  );
-  const timeline = timelineSnap.docs.map(
-    (d) => ({ ...d.data(), id: d.id }) as TimelineEntry,
-  );
+  if (!caseData) return null;
 
   return { case: caseData, timeline, sharedBy: shareData.doctorName };
 }
