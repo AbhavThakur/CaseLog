@@ -710,16 +710,10 @@ export async function createShareLink(
   doctorName: string,
   expiresInDays?: number,
 ): Promise<string> {
-  // Use a deterministic ID to avoid needing a compound query index
   const shareId = `${doctorId}_${caseId}`;
   const shareRef = doc(db, col("shared_cases"), shareId);
 
-  const existing = await getDoc(shareRef);
-  if (existing.exists()) {
-    return shareId;
-  }
-
-  // Snapshot the case data so shared links work without auth
+  // Always snapshot the latest case data (refreshes on re-share)
   const caseSnap = await getDoc(
     doc(db, col("doctors"), doctorId, "cases", caseId),
   );
