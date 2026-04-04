@@ -32,6 +32,7 @@ import type { Timestamp } from "firebase/firestore";
 import type { Reminder } from "@/lib/types";
 import { MiniCalendar } from "@/components/dashboard/MiniCalendar";
 import { useReminderNotifications } from "@/hooks/useReminderNotifications";
+import { openWhatsAppReminder } from "@/lib/whatsapp";
 
 export default function DashboardPage() {
   const { user, doctor } = useAuth();
@@ -97,6 +98,18 @@ export default function DashboardPage() {
   const handleDismissReminder = async (reminderId: string) => {
     if (!user) return;
     await dismissReminder(user.uid, reminderId);
+  };
+
+  const handleWhatsAppReminder = (r: Reminder) => {
+    if (!r.phone) return;
+    openWhatsAppReminder({
+      phone: r.phone,
+      patientName: r.patientName,
+      title: r.title,
+      dueDate: r.dueDate?.toDate?.(),
+      note: r.note,
+      doctorName: doctor?.displayName,
+    });
   };
 
   const entryTypeIcon = (type: string) => {
@@ -509,15 +522,29 @@ export default function DashboardPage() {
                                 formatTime(r.dueDate.toDate())}
                             </p>
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDismissReminder(r.id);
-                            }}
-                            className="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] shrink-0"
-                          >
-                            Done
-                          </button>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {r.channel === "whatsapp" && r.phone && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleWhatsAppReminder(r);
+                                }}
+                                className="text-xs px-2 py-1 rounded-md bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 transition-colors"
+                                title="Send via WhatsApp"
+                              >
+                                WhatsApp
+                              </button>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleDismissReminder(r.id);
+                              }}
+                              className="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] shrink-0"
+                            >
+                              Done
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -543,7 +570,19 @@ export default function DashboardPage() {
                               {r.patientName}
                             </p>
                           </div>
-                          <span className="text-xs text-[hsl(var(--muted-foreground))] shrink-0">
+                          <span className="text-xs text-[hsl(var(--muted-foreground))] shrink-0 flex items-center gap-1.5">
+                            {r.channel === "whatsapp" && r.phone && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleWhatsAppReminder(r);
+                                }}
+                                className="text-xs px-2 py-1 rounded-md bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 transition-colors"
+                                title="Send via WhatsApp"
+                              >
+                                WhatsApp
+                              </button>
+                            )}
                             {r.dueDate?.toDate &&
                               formatDate(r.dueDate.toDate())}
                           </span>

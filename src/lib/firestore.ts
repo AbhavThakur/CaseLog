@@ -221,7 +221,9 @@ export async function searchCases(
         c.admission.initialDiagnosis.toLowerCase().includes(term) ||
         c.admission.chiefComplaint.toLowerCase().includes(term) ||
         c.caseNumber.toLowerCase().includes(term) ||
-        c.tags.some((t) => t.toLowerCase().includes(term)),
+        c.tags.some((t) => t.toLowerCase().includes(term)) ||
+        (c.patient.smokingStatus?.toLowerCase().includes(term) ?? false) ||
+        (c.patient.clinicalHistory?.toLowerCase().includes(term) ?? false),
     );
   }
 

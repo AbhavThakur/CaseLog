@@ -21,6 +21,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { addReminder } from "@/lib/firestore";
+import { openWhatsAppReminder } from "@/lib/whatsapp";
 import { Timestamp } from "firebase/firestore";
 
 interface ReminderFormProps {
@@ -64,8 +65,20 @@ export function ReminderForm({
 
       toast({
         title: "Reminder set",
-        description: `Reminder for ${patientName} on ${new Date(dueDate).toLocaleDateString()}.${channel !== "in-app" ? " Notification delivery requires backend setup." : ""}`,
+        description: `Reminder for ${patientName} on ${new Date(dueDate).toLocaleDateString()}.`,
       });
+
+      // If WhatsApp channel and phone provided, open WhatsApp immediately
+      if (channel === "whatsapp" && phone) {
+        openWhatsAppReminder({
+          phone,
+          patientName,
+          title,
+          dueDate: new Date(dueDate),
+          note: note || undefined,
+          doctorName: user.displayName ?? undefined,
+        });
+      }
 
       setOpen(false);
       setTitle("Follow-up appointment");
@@ -155,9 +168,7 @@ export function ReminderForm({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="in-app">In-App Only</SelectItem>
-                <SelectItem value="whatsapp">
-                  WhatsApp (requires backend)
-                </SelectItem>
+                <SelectItem value="whatsapp">WhatsApp</SelectItem>
                 <SelectItem value="sms">SMS (requires backend)</SelectItem>
               </SelectContent>
             </Select>
@@ -173,9 +184,10 @@ export function ReminderForm({
                 onChange={(e) => setPhone(e.target.value)}
                 required
               />
-              <p className="text-xs text-amber-600">
-                WhatsApp/SMS delivery requires Cloud Functions setup. Reminders
-                will be saved and ready to send once backend is configured.
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                {channel === "whatsapp"
+                  ? "WhatsApp will open with a pre-filled message when the reminder is created."
+                  : "SMS delivery requires Cloud Functions setup. Reminders will be saved and ready to send once backend is configured."}
               </p>
             </div>
           )}

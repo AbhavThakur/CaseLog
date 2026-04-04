@@ -25,6 +25,17 @@ function currentPermission(): NotificationPermission {
     : "denied";
 }
 
+async function showNotification(title: string, options: NotificationOptions) {
+  // Mobile browsers (PWA) require ServiceWorker showNotification
+  if ("serviceWorker" in navigator) {
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(title, options);
+    return;
+  }
+  // Desktop fallback
+  new Notification(title, options);
+}
+
 export function useReminderNotifications(reminders: Reminder[]) {
   const [permission, setPermission] =
     useState<NotificationPermission>(currentPermission);
@@ -60,12 +71,11 @@ export function useReminderNotifications(reminders: Reminder[]) {
         // Notify if due within the next 15 minutes or already past
         const diff = due.getTime() - now;
         if (diff <= 15 * 60 * 1000) {
-          const n = new Notification(`Reminder: ${r.title}`, {
+          showNotification(`Reminder: ${r.title}`, {
             body: `Patient: ${r.patientName}${r.note ? `\n${r.note}` : ""}`,
             icon: "/icons/icon-192x192.png",
             tag: r.id,
           });
-          n.onclick = () => window.focus();
           markNotified(r.id);
         }
       }

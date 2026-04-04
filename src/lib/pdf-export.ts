@@ -79,6 +79,17 @@ export function exportCasePDF(
   if (patientCase.patient.phone) {
     y = addField(doc, "Phone", patientCase.patient.phone, y);
   }
+  if (patientCase.patient.smokingStatus) {
+    y = addField(doc, "Smoking Status", patientCase.patient.smokingStatus, y);
+  }
+  if (patientCase.patient.clinicalHistory) {
+    y = addField(
+      doc,
+      "Clinical History",
+      patientCase.patient.clinicalHistory,
+      y,
+    );
+  }
   y += 4;
 
   // Admission Details
@@ -110,6 +121,44 @@ export function exportCasePDF(
     y = addField(doc, "Tags", patientCase.tags.join(", "), y);
   }
   y += 4;
+
+  // Investigations & Reports
+  if (patientCase.investigations) {
+    const inv = patientCase.investigations;
+    const hasAny =
+      inv.chestXrayFindings ||
+      inv.ctFindings ||
+      inv.interventionDone ||
+      inv.procedureFindings ||
+      inv.balReport ||
+      inv.histopathReport;
+    if (hasAny) {
+      y = addSection(doc, "Investigations & Reports", y);
+      if (inv.chestXrayFindings)
+        y = addField(doc, "Chest X-ray", inv.chestXrayFindings, y);
+      if (inv.ctFindings) y = addField(doc, "CT Findings", inv.ctFindings, y);
+      if (inv.interventionDone)
+        y = addField(doc, "Intervention", inv.interventionDone, y);
+      if (inv.procedureFindings)
+        y = addField(doc, "Procedure Findings", inv.procedureFindings, y);
+      if (inv.balReport) y = addField(doc, "BAL Report", inv.balReport, y);
+      if (inv.histopathReport)
+        y = addField(doc, "Histopath Report", inv.histopathReport, y);
+      y += 4;
+    }
+  }
+
+  // Follow-Up Visits
+  if (patientCase.followUps && patientCase.followUps.length > 0) {
+    y = addSection(doc, "Follow-Up Visits", y);
+    for (const fu of patientCase.followUps) {
+      const fuDate = fu.date
+        ? formatDate((fu.date as Timestamp).toDate())
+        : "N/A";
+      y = addField(doc, fuDate, fu.notes, y);
+    }
+    y += 4;
+  }
 
   // Discharge Summary (if discharged)
   if (patientCase.discharge) {

@@ -36,6 +36,7 @@ export default function AnalyticsPage() {
     if (!user) return;
     getAnalyticsData(user.uid)
       .then(setData)
+      .catch((err) => console.error("Analytics fetch failed:", err))
       .finally(() => setLoading(false));
   }, [user]);
 
