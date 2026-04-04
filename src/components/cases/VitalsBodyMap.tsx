@@ -528,13 +528,13 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* ── BACK LAYER: Left Arm (behind torso) ── */}
                   <path
                     d={`
-                    M65 82 Q56 86 50 96 Q44 108 40 124 Q36 142 34 160
-                    Q32 174 31 186 Q30 196 30 204
-                    C30 210 29 216 28 222 Q26 232 24 240 Q22 248 21 254
-                    L17 254 Q18 248 20 240 Q22 232 23 222
-                    C24 216 24 210 24 204 Q24 196 25 186
-                    Q26 174 28 160 Q30 142 33 124
-                    Q36 108 40 96 Q44 88 52 82 Z
+                    M66 82 Q56 88 52 100 Q46 114 44 130 Q38 150 36 168
+                    Q34 182 33 192 Q32 202 32 210
+                    C32 216 30 224 28 232 Q26 242 24 252 Q22 258 22 264
+                    L10 264 Q12 258 12 250 Q14 240 14 232
+                    C14 224 14 218 16 210 Q16 202 18 192
+                    Q18 182 20 168 Q24 150 26 130
+                    Q28 114 34 100 Q42 90 50 84 Z
                   `}
                     fill="url(#skinLight)"
                     stroke="#b8845c"
@@ -543,8 +543,8 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* Left forearm */}
                   <path
                     d={`
-                    M30 204 Q28 218 26 232 Q24 244 22 254
-                    L17 254 Q19 244 21 232 Q23 218 24 204 Z
+                    M32 210 Q30 224 28 238 Q26 250 22 264
+                    L10 264 Q12 252 14 238 Q14 224 16 210 Z
                   `}
                     fill="url(#skinShadow)"
                     stroke="#b8845c"
@@ -552,7 +552,7 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Left hand */}
                   <path
-                    d="M22 254 Q20 260 18 266 Q16 270 15 274 Q14 278 16 280 Q18 279 19 276 L20 270 Q20 274 19 278 Q18 282 20 283 Q22 282 22 278 L22 272 Q22 276 22 280 Q22 284 24 283 Q26 281 25 278 L24 272 Q25 276 26 280 Q27 282 26 276 Q24 268 22 254 Z"
+                    d="M22 264 Q19 270 16 276 Q13 282 11 286 Q10 290 12 292 Q14 291 15 288 L16 282 Q16 286 15 290 Q14 294 16 295 Q18 294 18 290 L18 284 Q18 288 18 292 Q18 296 20 295 Q22 293 21 290 L20 284 Q21 288 22 292 Q23 294 22 288 Q20 278 17 268 L10 264 Z"
                     fill="url(#skinLight)"
                     stroke="#b8845c"
                     strokeWidth="0.25"
@@ -561,13 +561,13 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* ── BACK LAYER: Right Arm (behind torso) ── */}
                   <path
                     d={`
-                    M135 82 Q144 86 150 96 Q156 108 160 124 Q164 142 166 160
-                    Q168 174 169 186 Q170 196 170 204
-                    C170 210 171 216 172 222 Q174 232 176 240 Q178 248 179 254
-                    L183 254 Q182 248 180 240 Q178 232 177 222
-                    C176 216 176 210 176 204 Q176 196 175 186
-                    Q174 174 172 160 Q170 142 167 124
-                    Q164 108 160 96 Q156 88 148 82 Z
+                    M134 82 Q144 88 148 100 Q154 114 156 130 Q162 150 164 168
+                    Q166 182 167 192 Q168 202 168 210
+                    C168 216 170 224 172 232 Q174 242 176 252 Q178 258 178 264
+                    L190 264 Q188 258 188 250 Q186 240 186 232
+                    C186 224 186 218 184 210 Q184 202 182 192
+                    Q182 182 180 168 Q176 150 174 130
+                    Q172 114 166 100 Q158 90 150 84 Z
                   `}
                     fill="url(#skinLight)"
                     stroke="#b8845c"
@@ -576,8 +576,8 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* Right forearm */}
                   <path
                     d={`
-                    M170 204 Q172 218 174 232 Q176 244 178 254
-                    L183 254 Q181 244 179 232 Q177 218 176 204 Z
+                    M168 210 Q170 224 172 238 Q174 250 178 264
+                    L190 264 Q188 252 186 238 Q186 224 184 210 Z
                   `}
                     fill="url(#skinShadow)"
                     stroke="#b8845c"
@@ -585,7 +585,7 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Right hand */}
                   <path
-                    d="M178 254 Q180 260 182 266 Q184 270 185 274 Q186 278 184 280 Q182 279 181 276 L180 270 Q180 274 181 278 Q182 282 180 283 Q178 282 178 278 L178 272 Q178 276 178 280 Q178 284 176 283 Q174 281 175 278 L176 272 Q175 276 174 280 Q173 282 174 276 Q176 268 178 254 Z"
+                    d="M178 264 Q181 270 184 276 Q187 282 189 286 Q190 290 188 292 Q186 291 185 288 L184 282 Q184 286 185 290 Q186 294 184 295 Q182 294 182 290 L182 284 Q182 288 182 292 Q182 296 180 295 Q178 293 179 290 L180 284 Q179 288 178 292 Q177 294 178 288 Q180 278 183 268 L190 264 Z"
                     fill="url(#skinLight)"
                     stroke="#b8845c"
                     strokeWidth="0.25"
@@ -593,26 +593,38 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
 
                   {/* Arm muscle definition — left */}
                   <path
-                    d="M48 100 Q44 120 40 140 Q37 155 35 170"
+                    d="M44 100 Q36 130 28 160 Q24 180 22 200"
                     fill="none"
                     stroke="url(#muscleLine)"
-                    strokeWidth="0.5"
+                    strokeWidth="0.6"
                   />
                   <path
-                    d="M56 92 Q50 110 46 130 Q43 148 40 165"
+                    d="M50 96 Q44 120 40 148 Q36 172 34 195"
+                    fill="none"
+                    stroke="url(#muscleLine)"
+                    strokeWidth="0.45"
+                  />
+                  <path
+                    d="M34 104 Q28 130 24 158 Q20 182 18 200"
                     fill="none"
                     stroke="url(#muscleLine)"
                     strokeWidth="0.35"
                   />
                   {/* Arm muscle definition — right */}
                   <path
-                    d="M152 100 Q156 120 160 140 Q163 155 165 170"
+                    d="M156 100 Q164 130 172 160 Q176 180 178 200"
                     fill="none"
                     stroke="url(#muscleLine)"
-                    strokeWidth="0.5"
+                    strokeWidth="0.6"
                   />
                   <path
-                    d="M144 92 Q150 110 154 130 Q157 148 160 165"
+                    d="M150 96 Q156 120 160 148 Q164 172 166 195"
+                    fill="none"
+                    stroke="url(#muscleLine)"
+                    strokeWidth="0.45"
+                  />
+                  <path
+                    d="M166 104 Q172 130 176 158 Q180 182 182 200"
                     fill="none"
                     stroke="url(#muscleLine)"
                     strokeWidth="0.35"
@@ -808,25 +820,25 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   <path
                     d={`
                     M62 215
-                    Q60 222 58 230
-                    Q56 240 56 250
-                    Q56 262 58 272
-                    L60 280
-                    Q62 286 64 290
-                    L84 290
-                    Q88 286 90 280
-                    L94 272
-                    Q96 266 98 262
+                    Q60 222 56 230
+                    Q52 240 50 250
+                    Q48 262 48 272
+                    L48 280
+                    Q48 286 50 290
+                    L82 290
+                    Q88 286 92 280
+                    L96 272
+                    Q98 266 100 262
                     L100 258
                     L102 262
-                    Q104 266 106 272
-                    L110 280
-                    Q112 286 116 290
-                    L136 290
-                    Q138 286 140 280
-                    L142 272
-                    Q144 262 144 250
-                    Q144 240 142 230
+                    Q102 266 104 272
+                    L108 280
+                    Q112 286 118 290
+                    L150 290
+                    Q152 286 152 280
+                    L152 272
+                    Q152 262 150 250
+                    Q148 240 144 230
                     Q140 222 138 215
                     Z
                   `}
@@ -853,14 +865,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Shorts leg creases */}
                   <path
-                    d="M74 260 Q76 270 78 280"
+                    d="M68 260 Q70 270 72 280"
                     fill="none"
                     stroke="#111"
                     strokeWidth="0.25"
                     opacity="0.3"
                   />
                   <path
-                    d="M126 260 Q124 270 122 280"
+                    d="M132 260 Q130 270 128 280"
                     fill="none"
                     stroke="#111"
                     strokeWidth="0.25"
@@ -871,14 +883,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* Left thigh */}
                   <path
                     d={`
-                    M58 290
-                    Q62 308 64 326
-                    Q66 344 66 360
-                    Q66 370 66 376
-                    L82 376
-                    Q82 370 82 360
-                    Q82 344 80 326
-                    Q78 308 76 290
+                    M52 290
+                    Q54 308 56 326
+                    Q58 340 60 356
+                    Q62 368 62 376
+                    L86 376
+                    Q86 368 86 356
+                    Q84 340 82 326
+                    Q80 308 80 290
                     Z
                   `}
                     fill="url(#skinLight)"
@@ -889,8 +901,8 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   <ellipse
                     cx="74"
                     cy="376"
-                    rx="9"
-                    ry="5"
+                    rx="13"
+                    ry="6"
                     fill="url(#skinShadow)"
                     stroke="#b8845c"
                     strokeWidth="0.25"
@@ -898,14 +910,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* Left shin + calf */}
                   <path
                     d={`
-                    M66 376
-                    Q64 394 64 412
-                    Q64 430 66 446
-                    Q68 458 68 468
-                    L80 468
-                    Q80 458 78 446
-                    Q76 430 76 412
-                    Q76 394 78 376
+                    M60 376
+                    Q56 394 54 412
+                    Q54 428 56 444
+                    Q60 458 64 468
+                    L82 468
+                    Q82 458 82 444
+                    Q82 428 82 412
+                    Q82 394 84 376
                     Z
                   `}
                     fill="url(#skinLight)"
@@ -914,20 +926,26 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Left calf muscle */}
                   <path
-                    d="M72 390 Q74 410 72 430 Q70 444 70 456"
+                    d="M68 390 Q66 410 66 430 Q66 444 66 456"
                     fill="none"
                     stroke="url(#muscleLine)"
-                    strokeWidth="0.4"
+                    strokeWidth="0.5"
                   />
                   <path
-                    d="M68 392 Q66 408 66 424"
+                    d="M62 394 Q58 412 58 430"
                     fill="none"
                     stroke="url(#muscleLine)"
-                    strokeWidth="0.3"
+                    strokeWidth="0.35"
                   />
-                  {/* Left thigh muscle line */}
+                  {/* Left thigh muscle lines */}
                   <path
-                    d="M68 294 Q70 310 72 328 Q74 346 74 362"
+                    d="M62 294 Q64 314 66 334 Q70 352 72 368"
+                    fill="none"
+                    stroke="url(#muscleLine)"
+                    strokeWidth="0.45"
+                  />
+                  <path
+                    d="M76 294 Q76 314 76 334 Q78 352 80 368"
                     fill="none"
                     stroke="url(#muscleLine)"
                     strokeWidth="0.35"
@@ -936,14 +954,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* ── Right Leg (skin below shorts) ── */}
                   <path
                     d={`
-                    M124 290
-                    Q122 308 120 326
-                    Q118 344 118 360
-                    Q118 370 118 376
-                    L134 376
-                    Q134 370 134 360
-                    Q134 344 136 326
-                    Q138 308 142 290
+                    M148 290
+                    Q146 308 144 326
+                    Q142 340 140 356
+                    Q138 368 138 376
+                    L114 376
+                    Q114 368 114 356
+                    Q116 340 118 326
+                    Q120 308 120 290
                     Z
                   `}
                     fill="url(#skinLight)"
@@ -954,8 +972,8 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   <ellipse
                     cx="126"
                     cy="376"
-                    rx="9"
-                    ry="5"
+                    rx="13"
+                    ry="6"
                     fill="url(#skinShadow)"
                     stroke="#b8845c"
                     strokeWidth="0.25"
@@ -963,14 +981,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* Right shin + calf */}
                   <path
                     d={`
-                    M118 376
-                    Q120 394 120 412
-                    Q120 430 118 446
-                    Q116 458 116 468
-                    L128 468
-                    Q128 458 130 446
-                    Q132 430 132 412
-                    Q132 394 130 376
+                    M140 376
+                    Q144 394 146 412
+                    Q146 428 144 444
+                    Q140 458 136 468
+                    L118 468
+                    Q118 458 118 444
+                    Q118 428 118 412
+                    Q118 394 116 376
                     Z
                   `}
                     fill="url(#skinLight)"
@@ -979,20 +997,26 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Right calf muscle */}
                   <path
-                    d="M124 390 Q122 410 124 430 Q126 444 126 456"
+                    d="M132 390 Q134 410 134 430 Q134 444 134 456"
                     fill="none"
                     stroke="url(#muscleLine)"
-                    strokeWidth="0.4"
+                    strokeWidth="0.5"
                   />
                   <path
-                    d="M130 392 Q132 408 132 424"
+                    d="M138 394 Q142 412 142 430"
                     fill="none"
                     stroke="url(#muscleLine)"
-                    strokeWidth="0.3"
+                    strokeWidth="0.35"
                   />
-                  {/* Right thigh muscle line */}
+                  {/* Right thigh muscle lines */}
                   <path
-                    d="M132 294 Q130 310 128 328 Q126 346 126 362"
+                    d="M138 294 Q136 314 134 334 Q130 352 128 368"
+                    fill="none"
+                    stroke="url(#muscleLine)"
+                    strokeWidth="0.45"
+                  />
+                  <path
+                    d="M124 294 Q124 314 124 334 Q122 352 120 368"
                     fill="none"
                     stroke="url(#muscleLine)"
                     strokeWidth="0.35"
@@ -1001,21 +1025,21 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* ── Left Shoe ── */}
                   <path
                     d={`
-                    M68 468
-                    Q66 472 64 476
-                    Q60 482 54 486
-                    Q48 490 44 488
-                    Q42 486 44 484
-                    Q48 482 52 480
-                    L58 476
-                    Q62 474 64 470
-                    L68 468
-                    L80 468
-                    Q80 472 78 476
-                    Q76 480 74 482
-                    Q78 484 80 482
-                    Q82 480 82 476
-                    Q82 472 80 468 Z
+                    M64 468
+                    Q62 472 58 476
+                    Q52 482 46 486
+                    Q40 490 36 488
+                    Q34 486 36 484
+                    Q40 482 44 480
+                    L50 476
+                    Q54 474 56 470
+                    L64 468
+                    L82 468
+                    Q82 472 80 476
+                    Q78 480 76 482
+                    Q80 484 84 482
+                    Q86 480 86 476
+                    Q86 472 82 468 Z
                   `}
                     fill="url(#shoeFill)"
                     stroke="#111"
@@ -1023,14 +1047,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Shoe laces */}
                   <path
-                    d="M60 480 L64 478 L62 482 L66 480"
+                    d="M52 480 L56 478 L54 482 L58 480"
                     fill="none"
                     stroke="#666"
                     strokeWidth="0.3"
                   />
                   {/* Sole */}
                   <path
-                    d="M44 488 Q54 492 68 490 Q76 488 80 486"
+                    d="M36 488 Q48 492 64 490 Q76 488 86 486"
                     fill="none"
                     stroke="#fff"
                     strokeWidth="0.8"
@@ -1040,21 +1064,21 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   {/* ── Right Shoe ── */}
                   <path
                     d={`
-                    M128 468
-                    Q130 472 132 476
-                    Q136 482 142 486
-                    Q148 490 152 488
-                    Q154 486 152 484
-                    Q148 482 144 480
-                    L138 476
-                    Q134 474 132 470
-                    L128 468
-                    L116 468
-                    Q116 472 118 476
-                    Q120 480 122 482
-                    Q118 484 116 482
+                    M136 468
+                    Q138 472 142 476
+                    Q148 482 154 486
+                    Q160 490 164 488
+                    Q166 486 164 484
+                    Q160 482 156 480
+                    L150 476
+                    Q146 474 144 470
+                    L136 468
+                    L118 468
+                    Q118 472 120 476
+                    Q122 480 124 482
+                    Q120 484 116 482
                     Q114 480 114 476
-                    Q114 472 116 468 Z
+                    Q114 472 118 468 Z
                   `}
                     fill="url(#shoeFill)"
                     stroke="#111"
@@ -1062,14 +1086,14 @@ export function VitalsBodyMap({ vitals, patient, onClose }: Props) {
                   />
                   {/* Shoe laces */}
                   <path
-                    d="M136 480 L132 478 L134 482 L130 480"
+                    d="M148 480 L144 478 L146 482 L142 480"
                     fill="none"
                     stroke="#666"
                     strokeWidth="0.3"
                   />
                   {/* Sole */}
                   <path
-                    d="M152 488 Q142 492 128 490 Q120 488 116 486"
+                    d="M164 488 Q152 492 136 490 Q124 488 114 486"
                     fill="none"
                     stroke="#fff"
                     strokeWidth="0.8"
