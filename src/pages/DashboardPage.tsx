@@ -30,6 +30,8 @@ import {
 import { formatDate, formatTime } from "@/lib/utils";
 import type { Timestamp } from "firebase/firestore";
 import type { Reminder } from "@/lib/types";
+import { MiniCalendar } from "@/components/dashboard/MiniCalendar";
+import { useReminderNotifications } from "@/hooks/useReminderNotifications";
 
 export default function DashboardPage() {
   const { user, doctor } = useAuth();
@@ -48,6 +50,7 @@ export default function DashboardPage() {
     recentActivity: [],
   });
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const { requestPermission, permission } = useReminderNotifications(reminders);
 
   useEffect(() => {
     if (!user) return;
@@ -188,6 +191,26 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      {/* ── Notification Permission Banner ── */}
+      {typeof Notification !== "undefined" &&
+        permission === "default" &&
+        reminders.length > 0 && (
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200/50 dark:border-blue-800/30">
+            <Bell className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <p className="text-sm text-blue-800 dark:text-blue-200 flex-1">
+              Enable browser notifications to get reminded about upcoming tasks.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="shrink-0"
+              onClick={requestPermission}
+            >
+              Enable
+            </Button>
+          </div>
+        )}
 
       {/* ── Stats Grid ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -431,6 +454,19 @@ export default function DashboardPage() {
 
         {/* Right Column — 1/3 width */}
         <div className="space-y-4 sm:space-y-6">
+          {/* Mini Calendar */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-primary-500" />
+                Calendar
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 sm:px-6 pb-4">
+              <MiniCalendar reminders={reminders} />
+            </CardContent>
+          </Card>
+
           {/* Today's Schedule (Reminders) */}
           <Card>
             <CardHeader className="pb-3">

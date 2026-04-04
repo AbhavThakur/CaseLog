@@ -4,6 +4,7 @@ import {
   ClipboardList,
   Plus,
   Search,
+  BarChart3,
   User,
   Shield,
 } from "lucide-react";
@@ -15,6 +16,7 @@ const navItems = [
   { to: "/cases", label: "Cases", icon: ClipboardList },
   { to: "/cases/new", label: "New Case", icon: Plus },
   { to: "/search", label: "Search", icon: Search },
+  { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/profile", label: "Profile", icon: User },
 ];
 

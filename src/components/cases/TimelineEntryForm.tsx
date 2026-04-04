@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Upload, X, Camera } from "lucide-react";
+import { Upload, X, Camera, FileDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { addTimelineEntry } from "@/lib/firestore";
+import { addTimelineEntry, updateTimelineEntry } from "@/lib/firestore";
+import type { TimelineEntry } from "@/lib/types";
 import {
   uploadFile,
   validateFile,
@@ -27,6 +28,7 @@ import {
   type TimelineEntryFormInput,
 } from "@/lib/schemas";
 import { fileSizeToString } from "@/lib/utils";
+import { entryTemplates, templateCategories } from "@/lib/entry-templates";
 
 const entryTypes = [
   { value: "observation", label: "🩺 Observation" },
@@ -43,14 +45,16 @@ interface Props {
   open: boolean;
   onClose: () => void;
   caseId: string;
+  editEntry?: TimelineEntry | null;
 }
 
-export function TimelineEntryForm({ open, onClose, caseId }: Props) {
+export function TimelineEntryForm({ open, onClose, caseId, editEntry }: Props) {
   const { user, doctor } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const {
     register,
@@ -61,10 +65,31 @@ export function TimelineEntryForm({ open, onClose, caseId }: Props) {
     reset,
   } = useForm<TimelineEntryFormInput, unknown, TimelineEntryFormData>({
     resolver: zodResolver(timelineEntrySchema),
-    defaultValues: {
-      type: "observation",
-      priority: "normal",
-    },
+    defaultValues: editEntry
+      ? {
+          type: editEntry.type,
+          title: editEntry.title,
+          description: editEntry.description,
+          priority: editEntry.priority,
+          vitals: editEntry.vitals,
+        }
+      : {
+          type: "observation",
+          priority: "normal",
+        },
+  });
+
+  // Reset form when editEntry changes
+  useState(() => {
+    if (editEntry) {
+      reset({
+        type: editEntry.type,
+        title: editEntry.title,
+        description: editEntry.description,
+        priority: editEntry.priority,
+        vitals: editEntry.vitals,
+      });
+    }
   });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,16 +151,29 @@ export function TimelineEntryForm({ open, onClose, caseId }: Props) {
         });
       }
 
-      await addTimelineEntry(user.uid, caseId, {
-        type: data.type,
-        title: data.title,
-        description: data.description ?? "",
-        priority: data.priority,
-        vitals: data.vitals,
-        attachments,
-      });
-
-      toast({ title: "Entry added", description: `${data.title}` });
+      if (editEntry) {
+        await updateTimelineEntry(user.uid, caseId, editEntry.id, {
+          type: data.type,
+          title: data.title,
+          description: data.description ?? "",
+          priority: data.priority,
+          vitals: data.vitals,
+          ...(attachments.length > 0
+            ? { attachments: [...editEntry.attachments, ...attachments] }
+            : {}),
+        });
+        toast({ title: "Entry updated", description: `${data.title}` });
+      } else {
+        await addTimelineEntry(user.uid, caseId, {
+          type: data.type,
+          title: data.title,
+          description: data.description ?? "",
+          priority: data.priority,
+          vitals: data.vitals,
+          attachments,
+        });
+        toast({ title: "Entry added", description: `${data.title}` });
+      }
       reset();
       setFiles([]);
       onClose();
@@ -154,8 +192,60 @@ export function TimelineEntryForm({ open, onClose, caseId }: Props) {
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Timeline Entry</DialogTitle>
+          <DialogTitle>
+            {editEntry ? "Edit Timeline Entry" : "Add Timeline Entry"}
+          </DialogTitle>
         </DialogHeader>
+
+        {/* Template Picker (only for new entries) */}
+        {!editEntry && (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => setShowTemplates(!showTemplates)}
+              className="flex items-center gap-2 text-sm font-medium text-[hsl(var(--primary))] hover:underline"
+            >
+              <FileDown className="h-4 w-4" />
+              {showTemplates ? "Hide templates" : "Use a template"}
+            </button>
+            {showTemplates && (
+              <div className="max-h-48 overflow-y-auto border border-[hsl(var(--border))] rounded-lg p-2 space-y-2 bg-[hsl(var(--muted))]/30">
+                {templateCategories.map((cat) => (
+                  <div key={cat}>
+                    <p className="text-[10px] font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1 px-1">
+                      {cat}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {entryTemplates
+                        .filter((t) => t.category === cat)
+                        .map((tmpl) => (
+                          <button
+                            key={tmpl.id}
+                            type="button"
+                            className="text-xs px-2 py-1 rounded-md bg-[hsl(var(--card))] border border-[hsl(var(--border))] hover:border-[hsl(var(--primary))] hover:text-[hsl(var(--primary))] transition-colors"
+                            onClick={() => {
+                              setValue("type", tmpl.type);
+                              setValue("title", tmpl.title);
+                              setValue("description", tmpl.description);
+                              setValue("priority", tmpl.priority);
+                              if (tmpl.vitals) setValue("vitals", tmpl.vitals);
+                              setShowTemplates(false);
+                              toast({
+                                title: "Template applied",
+                                description: tmpl.label,
+                              });
+                            }}
+                          >
+                            {tmpl.label}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Entry Type */}
@@ -378,7 +468,7 @@ export function TimelineEntryForm({ open, onClose, caseId }: Props) {
               {submitting && (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
               )}
-              Save Entry
+              {editEntry ? "Update Entry" : "Save Entry"}
             </Button>
           </div>
         </form>

@@ -298,6 +298,131 @@ export async function deleteTimelineEntry(
   );
 }
 
+export async function updateTimelineEntry(
+  doctorId: string,
+  caseId: string,
+  entryId: string,
+  data: Partial<
+    Omit<TimelineEntry, "id" | "createdAt" | "updatedAt" | "entryDate">
+  >,
+): Promise<void> {
+  await updateDoc(
+    doc(db, col("doctors"), doctorId, "cases", caseId, "timeline", entryId),
+    {
+      ...data,
+      updatedAt: serverTimestamp(),
+    },
+  );
+}
+
+// ─── Analytics ───
+
+export interface AnalyticsData {
+  casesByTag: { tag: string; count: number }[];
+  casesByOutcome: { outcome: string; count: number }[];
+  casesByMonth: { month: string; count: number }[];
+  casesByStatus: { status: string; count: number }[];
+  avgStayDays: number;
+  totalPatients: number;
+  caseStudyCount: number;
+  visitTypeSplit: { ipd: number; opd: number };
+}
+
+export async function getAnalyticsData(
+  doctorId: string,
+): Promise<AnalyticsData> {
+  const snap = await getDocs(casesRef(doctorId));
+  const cases = snap.docs.map(
+    (d) => ({ ...d.data(), id: d.id }) as PatientCase,
+  );
+
+  // By tag
+  const tagMap = new Map<string, number>();
+  for (const c of cases) {
+    for (const t of c.tags) {
+      tagMap.set(t, (tagMap.get(t) ?? 0) + 1);
+    }
+  }
+  const casesByTag = Array.from(tagMap.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 12);
+
+  // By outcome
+  const outcomeMap = new Map<string, number>();
+  for (const c of cases) {
+    if (c.discharge?.outcome) {
+      const o = c.discharge.outcome;
+      outcomeMap.set(o, (outcomeMap.get(o) ?? 0) + 1);
+    }
+  }
+  const casesByOutcome = Array.from(outcomeMap.entries()).map(
+    ([outcome, count]) => ({ outcome, count }),
+  );
+
+  // By month (last 12 months)
+  const monthMap = new Map<string, number>();
+  const now = new Date();
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    monthMap.set(key, 0);
+  }
+  for (const c of cases) {
+    if (c.createdAt) {
+      const d = c.createdAt.toDate();
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      if (monthMap.has(key)) {
+        monthMap.set(key, (monthMap.get(key) ?? 0) + 1);
+      }
+    }
+  }
+  const casesByMonth = Array.from(monthMap.entries()).map(([month, count]) => ({
+    month,
+    count,
+  }));
+
+  // By status
+  const statusMap = new Map<string, number>();
+  for (const c of cases) {
+    statusMap.set(c.status, (statusMap.get(c.status) ?? 0) + 1);
+  }
+  const casesByStatus = Array.from(statusMap.entries()).map(
+    ([status, count]) => ({ status, count }),
+  );
+
+  // Average stay
+  let totalDays = 0;
+  let stayCount = 0;
+  for (const c of cases) {
+    if (c.discharge?.date && c.admission?.date) {
+      const admDate = c.admission.date.toDate();
+      const disDate = c.discharge.date.toDate();
+      totalDays += (disDate.getTime() - admDate.getTime()) / 86400000;
+      stayCount++;
+    }
+  }
+
+  // Visit type
+  let ipd = 0;
+  let opd = 0;
+  for (const c of cases) {
+    if (c.admission.visitType === "ipd") ipd++;
+    else opd++;
+  }
+
+  return {
+    casesByTag,
+    casesByOutcome,
+    casesByMonth,
+    casesByStatus,
+    avgStayDays: stayCount > 0 ? Math.round(totalDays / stayCount) : 0,
+    totalPatients: cases.length,
+    caseStudyCount: cases.filter((c) => c.isCaseStudy).length,
+    visitTypeSplit: { ipd, opd },
+  };
+}
+
 // ─── Vitals ───
 
 function vitalsRef(doctorId: string, caseId: string) {
@@ -564,4 +689,96 @@ export async function setDoctorAdmin(
     isAdmin,
     updatedAt: serverTimestamp(),
   });
+}
+
+// ─── Shareable Links ───
+
+export interface SharedCaseData {
+  doctorId: string;
+  caseId: string;
+  doctorName: string;
+  createdAt: Timestamp;
+  expiresAt: Timestamp | null;
+}
+
+export async function createShareLink(
+  doctorId: string,
+  caseId: string,
+  doctorName: string,
+  expiresInDays?: number,
+): Promise<string> {
+  // Check if a share link already exists
+  const q = query(
+    collection(db, col("shared_cases")),
+    where("doctorId", "==", doctorId),
+    where("caseId", "==", caseId),
+  );
+  const existing = await getDocs(q);
+  if (!existing.empty) {
+    return existing.docs[0]!.id;
+  }
+
+  const expiresAt = expiresInDays
+    ? Timestamp.fromDate(
+        new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000),
+      )
+    : null;
+
+  const docRef = await addDoc(collection(db, col("shared_cases")), {
+    doctorId,
+    caseId,
+    doctorName,
+    expiresAt,
+    createdAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function getSharedCase(
+  shareId: string,
+): Promise<{
+  case: PatientCase;
+  timeline: TimelineEntry[];
+  sharedBy: string;
+} | null> {
+  const shareSnap = await getDoc(doc(db, col("shared_cases"), shareId));
+  if (!shareSnap.exists()) return null;
+
+  const shareData = shareSnap.data() as SharedCaseData;
+
+  // Check expiry
+  if (shareData.expiresAt) {
+    const expires = shareData.expiresAt.toDate();
+    if (expires < new Date()) return null;
+  }
+
+  const caseSnap = await getDoc(
+    doc(db, col("doctors"), shareData.doctorId, "cases", shareData.caseId),
+  );
+  if (!caseSnap.exists()) return null;
+
+  const caseData = { ...caseSnap.data(), id: caseSnap.id } as PatientCase;
+
+  const timelineSnap = await getDocs(
+    query(
+      collection(
+        db,
+        col("doctors"),
+        shareData.doctorId,
+        "cases",
+        shareData.caseId,
+        "timeline",
+      ),
+      orderBy("entryDate", "desc"),
+    ),
+  );
+  const timeline = timelineSnap.docs.map(
+    (d) => ({ ...d.data(), id: d.id }) as TimelineEntry,
+  );
+
+  return { case: caseData, timeline, sharedBy: shareData.doctorName };
+}
+
+export async function revokeShareLink(shareId: string): Promise<void> {
+  await deleteDoc(doc(db, col("shared_cases"), shareId));
 }

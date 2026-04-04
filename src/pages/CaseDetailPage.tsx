@@ -15,6 +15,9 @@ import {
   Clock,
   AlertTriangle,
   ChevronRight,
+  Pencil,
+  Share2,
+  Wind,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +38,7 @@ import {
   subscribeToTimeline,
   subscribeToVitals,
   updateCase,
+  createShareLink,
 } from "@/lib/firestore";
 import type { PatientCase, TimelineEntry, VitalsRecord } from "@/lib/types";
 import {
@@ -46,6 +50,7 @@ import {
 import { TimelineEntryForm } from "@/components/cases/TimelineEntryForm";
 import { DischargeForm } from "@/components/cases/DischargeForm";
 import { VitalsChart } from "@/components/cases/VitalsChart";
+import { VitalsBodyMap } from "@/components/cases/VitalsBodyMap";
 import { FilePreview } from "@/components/FilePreview";
 import { QuickPhotoCapture } from "@/components/cases/QuickPhotoCapture";
 import { ReminderForm } from "@/components/cases/ReminderForm";
@@ -63,7 +68,10 @@ export default function CaseDetailPage() {
   const [vitals, setVitals] = useState<VitalsRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEntryForm, setShowEntryForm] = useState(false);
+  const [editEntry, setEditEntry] = useState<TimelineEntry | null>(null);
   const [showDischargeForm, setShowDischargeForm] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [showBodyMap, setShowBodyMap] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -104,6 +112,32 @@ export default function CaseDetailPage() {
         ? "Removed from case studies"
         : "Marked as case study",
     });
+  };
+
+  const handleShare = async () => {
+    if (!user || !caseId) return;
+    setSharing(true);
+    try {
+      const shareId = await createShareLink(
+        user.uid,
+        caseId,
+        doctor?.displayName ?? "Doctor",
+        30,
+      );
+      const url = `${window.location.origin}/shared/${shareId}`;
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link copied!",
+        description: "Read-only link valid for 30 days. Copied to clipboard.",
+      });
+    } catch {
+      toast({
+        title: "Failed to create share link",
+        variant: "destructive",
+      });
+    } finally {
+      setSharing(false);
+    }
   };
 
   const openPreview = (
@@ -317,6 +351,16 @@ export default function CaseDetailPage() {
                   variant="outline"
                   size="sm"
                   className="rounded-lg"
+                  onClick={handleShare}
+                  disabled={sharing}
+                >
+                  <Share2 className="mr-1.5 h-3.5 w-3.5" />
+                  {sharing ? "…" : "Share"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
                   onClick={() =>
                     exportCasePDF(patientCase, timeline, doctor?.displayName)
                   }
@@ -453,14 +497,34 @@ export default function CaseDetailPage() {
                 <Heart className="h-4 w-4 text-hyper-blue" />
                 Latest Vitals
               </h3>
-              {latestVitals.recordedAt && (
-                <span className="text-xs text-white/40">
-                  {formatTime(latestVitals.recordedAt.toDate())}
-                </span>
-              )}
+              <div className="flex items-center gap-3">
+                {latestVitals.recordedAt && (
+                  <span className="text-xs text-white/40">
+                    {formatTime(latestVitals.recordedAt.toDate())}
+                  </span>
+                )}
+                <button
+                  onClick={() => setShowBodyMap(true)}
+                  className="text-xs text-hyper-blue hover:text-hyper-blue/80 font-semibold transition-colors flex items-center gap-1"
+                >
+                  View All
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {latestVitals.bloodPressureSystolic &&
                 latestVitals.bloodPressureDiastolic && (
                   <div className="glass-card rounded-3xl p-4 group hover:glow-blue transition-all duration-300">
@@ -652,6 +716,53 @@ export default function CaseDetailPage() {
                   </p>
                 </div>
               )}
+
+              {latestVitals.respiratoryRate != null && (
+                <div
+                  className={`glass-card rounded-3xl p-4 transition-all duration-300 ${
+                    latestVitals.respiratoryRate > 24 ||
+                    latestVitals.respiratoryRate < 12
+                      ? "glow-ruby border-emergency-ruby/30"
+                      : "hover:glow-blue"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        latestVitals.respiratoryRate > 24 ||
+                        latestVitals.respiratoryRate < 12
+                          ? "bg-emergency-ruby/20"
+                          : "bg-teal-500/20"
+                      }`}
+                    >
+                      <Wind
+                        className={`h-4 w-4 ${
+                          latestVitals.respiratoryRate > 24 ||
+                          latestVitals.respiratoryRate < 12
+                            ? "text-emergency-ruby"
+                            : "text-teal-400"
+                        }`}
+                      />
+                    </div>
+                    <span className="text-[10px] text-white/50 uppercase font-semibold tracking-wider">
+                      Resp Rate
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <p
+                      className={`text-2xl font-bold tracking-tight ${
+                        latestVitals.respiratoryRate > 24 ||
+                        latestVitals.respiratoryRate < 12
+                          ? "text-emergency-ruby"
+                          : "text-white"
+                      }`}
+                    >
+                      {latestVitals.respiratoryRate}
+                    </p>
+                    <span className="text-xs text-white/40">br/min</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -797,6 +908,17 @@ export default function CaseDetailPage() {
                                   {entry.type.replace("-", " ")}
                                 </span>
                                 {priorityConfig(entry.priority).badge}
+                                <button
+                                  type="button"
+                                  title="Edit entry"
+                                  onClick={() => {
+                                    setEditEntry(entry);
+                                    setShowEntryForm(true);
+                                  }}
+                                  className="ml-auto p-1 rounded-md text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] transition-colors opacity-0 group-hover:opacity-100 sm:opacity-100"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </button>
                               </div>
                               <h4 className="font-semibold text-sm">
                                 {entry.title}
@@ -963,8 +1085,12 @@ export default function CaseDetailPage() {
       {showEntryForm && caseId && (
         <TimelineEntryForm
           open={showEntryForm}
-          onClose={() => setShowEntryForm(false)}
+          onClose={() => {
+            setShowEntryForm(false);
+            setEditEntry(null);
+          }}
           caseId={caseId}
+          editEntry={editEntry}
         />
       )}
 
@@ -988,6 +1114,15 @@ export default function CaseDetailPage() {
       {/* Quick Photo Capture FAB */}
       {patientCase.status === "active" && caseId && (
         <QuickPhotoCapture caseId={caseId} />
+      )}
+
+      {/* Vitals Body Map Overlay */}
+      {showBodyMap && (
+        <VitalsBodyMap
+          vitals={vitals}
+          patient={patientCase.patient}
+          onClose={() => setShowBodyMap(false)}
+        />
       )}
     </div>
   );
