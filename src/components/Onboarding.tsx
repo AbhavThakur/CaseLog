@@ -1,19 +1,17 @@
 import { useState, useCallback } from "react";
-import {
-  ClipboardList,
-  Activity,
-  Camera,
-  Bell,
-  Share2,
-  ChevronRight,
-  ChevronLeft,
-  Sparkles,
-} from "lucide-react";
+import { ChevronRight, ChevronLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  OnboardingCasesIllustration,
+  OnboardingTimelineIllustration,
+  OnboardingCameraIllustration,
+  OnboardingBellIllustration,
+  OnboardingShareIllustration,
+} from "@/components/illustrations";
 
 const STEPS = [
   {
-    icon: ClipboardList,
+    illustration: OnboardingCasesIllustration,
     color: "text-blue-500",
     bg: "bg-blue-100 dark:bg-blue-900/30",
     title: "Track Patient Cases",
@@ -21,7 +19,7 @@ const STEPS = [
       "Create detailed patient records with demographics, diagnosis, vitals, investigations, and clinical history — all in one place.",
   },
   {
-    icon: Activity,
+    illustration: OnboardingTimelineIllustration,
     color: "text-emerald-500",
     bg: "bg-emerald-100 dark:bg-emerald-900/30",
     title: "Timeline & Vitals",
@@ -29,7 +27,7 @@ const STEPS = [
       "Build a chronological timeline of observations, medications, procedures, and lab results. Track vitals with interactive body-map visualization.",
   },
   {
-    icon: Camera,
+    illustration: OnboardingCameraIllustration,
     color: "text-amber-500",
     bg: "bg-amber-100 dark:bg-amber-900/30",
     title: "Photos & Documents",
@@ -37,7 +35,7 @@ const STEPS = [
       "Attach images, X-rays, CT scans, and reports directly to timeline entries. Quick photo capture with your phone camera.",
   },
   {
-    icon: Bell,
+    illustration: OnboardingBellIllustration,
     color: "text-rose-500",
     bg: "bg-rose-100 dark:bg-rose-900/30",
     title: "Reminders & Follow-ups",
@@ -45,7 +43,7 @@ const STEPS = [
       "Set reminders for medication, lab reviews, or follow-up visits. Never miss a critical patient action.",
   },
   {
-    icon: Share2,
+    illustration: OnboardingShareIllustration,
     color: "text-violet-500",
     bg: "bg-violet-100 dark:bg-violet-900/30",
     title: "Share & Export",
@@ -62,7 +60,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
   const isLast = step === STEPS.length - 1;
   const current = STEPS[step]!;
-  const Icon = current.icon;
+  const Illustration = current.illustration;
 
   const handleNext = useCallback(() => {
     if (isLast) {
@@ -90,9 +88,9 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           </button>
 
           <div
-            className={`w-16 h-16 rounded-2xl ${current.bg} flex items-center justify-center mb-5 transition-all duration-300`}
+            className={`w-20 h-20 rounded-2xl ${current.bg} flex items-center justify-center mb-5 transition-all duration-300`}
           >
-            <Icon className={`h-8 w-8 ${current.color}`} />
+            <Illustration className="w-14 h-14" />
           </div>
 
           <h2 className="text-xl font-bold tracking-tight">{current.title}</h2>

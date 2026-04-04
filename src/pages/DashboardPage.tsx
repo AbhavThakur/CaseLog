@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useCases } from "@/hooks/useCases";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   getDashboardStats,
   subscribeToReminders,
@@ -33,6 +34,10 @@ import type { Reminder } from "@/lib/types";
 import { MiniCalendar } from "@/components/dashboard/MiniCalendar";
 import { useReminderNotifications } from "@/hooks/useReminderNotifications";
 import { openWhatsAppReminder } from "@/lib/whatsapp";
+import {
+  EmptyCasesIllustration,
+  EmptyRemindersIllustration,
+} from "@/components/illustrations";
 
 export default function DashboardPage() {
   const { user, doctor } = useAuth();
@@ -172,24 +177,38 @@ export default function DashboardPage() {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 p-6 sm:p-8 text-white">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMS41IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDcpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCBmaWxsPSJ1cmwoI2cpIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIi8+PC9zdmc+')] opacity-60" />
         <div className="relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-sm text-blue-100 mb-1">{todayStr}</p>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              {greeting()}, Dr. {doctor?.displayName?.split(" ")[0] ?? ""}
-            </h1>
-            <div className="flex items-center gap-3 mt-2 text-sm text-blue-100">
-              {doctor?.specialization && (
-                <span className="flex items-center gap-1">
-                  <Stethoscope className="h-3.5 w-3.5" />
-                  {doctor.specialization}
-                </span>
-              )}
-              {doctor?.hospital && (
-                <span className="flex items-center gap-1">
-                  <span className="hidden sm:inline">·</span>
-                  {doctor.hospital}
-                </span>
-              )}
+          <div className="flex items-start gap-4 min-w-0">
+            <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-white/30 shrink-0">
+              <AvatarImage
+                src={doctor?.photoURL ?? user?.photoURL ?? undefined}
+              />
+              <AvatarFallback className="bg-white/20 text-white text-lg font-bold">
+                {(doctor?.displayName ?? "U")
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm text-blue-100 mb-1">{todayStr}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+                {greeting()}, Dr. {doctor?.displayName?.split(" ")[0] ?? ""}
+              </h1>
+              <div className="flex items-center gap-3 mt-2 text-sm text-blue-100">
+                {doctor?.specialization && (
+                  <span className="flex items-center gap-1">
+                    <Stethoscope className="h-3.5 w-3.5" />
+                    {doctor.specialization}
+                  </span>
+                )}
+                {doctor?.hospital && (
+                  <span className="flex items-center gap-1">
+                    <span className="hidden sm:inline">·</span>
+                    {doctor.hospital}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <Button
@@ -351,7 +370,7 @@ export default function DashboardPage() {
                 </div>
               ) : recentCases.length === 0 ? (
                 <div className="text-center py-12 text-[hsl(var(--muted-foreground))]">
-                  <ClipboardList className="mx-auto h-12 w-12 mb-3 opacity-20" />
+                  <EmptyCasesIllustration className="w-36 h-36 mx-auto mb-2" />
                   <p className="text-sm">
                     No cases yet. Create your first case to get started.
                   </p>
@@ -491,7 +510,7 @@ export default function DashboardPage() {
             <CardContent className="px-4 sm:px-6">
               {todayReminders.length === 0 && upcomingReminders.length === 0 ? (
                 <div className="text-center py-6 text-[hsl(var(--muted-foreground))]">
-                  <Calendar className="mx-auto h-8 w-8 mb-2 opacity-20" />
+                  <EmptyRemindersIllustration className="w-28 h-28 mx-auto mb-1" />
                   <p className="text-sm">No upcoming reminders</p>
                   <p className="text-xs mt-1">Add reminders from case pages</p>
                 </div>

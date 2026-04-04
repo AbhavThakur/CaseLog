@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { EmptySearchIllustration } from "@/components/illustrations";
 import {
   Select,
   SelectContent,
@@ -327,7 +328,7 @@ export default function SearchPage() {
           {results.length === 0 ? (
             <Card>
               <CardContent className="text-center py-10 text-[hsl(var(--muted-foreground))]">
-                <SearchIcon className="mx-auto h-10 w-10 mb-3 opacity-20" />
+                <EmptySearchIllustration className="w-32 h-32 mx-auto mb-1" />
                 <p className="text-sm font-medium">No cases found</p>
                 <p className="text-xs mt-1">
                   Try adjusting your search or filters

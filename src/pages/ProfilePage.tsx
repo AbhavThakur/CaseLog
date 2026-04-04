@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,12 +16,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { createOrUpdateDoctor } from "@/lib/firestore";
+import { uploadProfilePhoto } from "@/lib/storage";
 import { profileSchema, type ProfileFormData } from "@/lib/schemas";
+import { LetterheadSettings } from "@/components/settings/LetterheadSettings";
+import { Camera } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, doctor, refreshDoctor } = useAuth();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const photoRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -46,6 +51,31 @@ export default function ProfilePage() {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Photo too large",
+        description: "Max 5 MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setUploading(true);
+    try {
+      const url = await uploadProfilePhoto(user.uid, file);
+      await createOrUpdateDoctor(user.uid, { photoURL: url });
+      await refreshDoctor();
+      toast({ title: "Profile photo updated" });
+    } catch {
+      toast({ title: "Upload failed", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   const onSubmit = async (data: ProfileFormData) => {
     if (!user) return;
@@ -78,13 +108,34 @@ export default function ProfilePage() {
       {/* Avatar / Account Info */}
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">
-          <Avatar className="h-16 w-16">
-            <AvatarImage
-              src={doctor?.photoURL ?? user?.photoURL ?? undefined}
-              alt={doctor?.displayName ?? "User"}
+          <div className="relative group">
+            <Avatar className="h-16 w-16">
+              <AvatarImage
+                src={doctor?.photoURL ?? user?.photoURL ?? undefined}
+                alt={doctor?.displayName ?? "User"}
+              />
+              <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+            </Avatar>
+            <button
+              type="button"
+              onClick={() => photoRef.current?.click()}
+              disabled={uploading}
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              {uploading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+              ) : (
+                <Camera className="h-5 w-5 text-white" />
+              )}
+            </button>
+            <input
+              ref={photoRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              onChange={handlePhotoUpload}
             />
-            <AvatarFallback className="text-lg">{initials}</AvatarFallback>
-          </Avatar>
+          </div>
           <div>
             <p className="font-semibold text-lg">
               {doctor?.displayName ?? user?.displayName ?? "Doctor"}
@@ -187,6 +238,9 @@ export default function ProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Letterhead Settings */}
+      <LetterheadSettings />
     </div>
   );
 }

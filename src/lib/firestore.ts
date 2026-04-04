@@ -711,6 +711,7 @@ export async function createShareLink(
   caseId: string,
   doctorName: string,
   expiresInDays?: number,
+  doctorPhotoURL?: string,
 ): Promise<string> {
   const shareId = `${doctorId}_${caseId}`;
   const shareRef = doc(db, col("shared_cases"), shareId);
@@ -739,6 +740,7 @@ export async function createShareLink(
     doctorId,
     caseId,
     doctorName,
+    doctorPhotoURL: doctorPhotoURL || null,
     expiresAt,
     caseData: { ...caseSnap.data(), id: caseSnap.id },
     timeline,
@@ -751,6 +753,7 @@ export async function getSharedCase(shareId: string): Promise<{
   case: PatientCase;
   timeline: TimelineEntry[];
   sharedBy: string;
+  doctorPhotoURL?: string;
 } | null> {
   const shareSnap = await getDoc(doc(db, col("shared_cases"), shareId));
   if (!shareSnap.exists()) return null;
@@ -769,7 +772,12 @@ export async function getSharedCase(shareId: string): Promise<{
 
   if (!caseData) return null;
 
-  return { case: caseData, timeline, sharedBy: shareData.doctorName };
+  return {
+    case: caseData,
+    timeline,
+    sharedBy: shareData.doctorName,
+    doctorPhotoURL: shareData.doctorPhotoURL ?? undefined,
+  };
 }
 
 export async function revokeShareLink(shareId: string): Promise<void> {

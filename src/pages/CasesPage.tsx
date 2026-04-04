@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Plus, Search, ChevronRight, User } from "lucide-react";
+import { Plus, Search, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { EmptyCasesIllustration } from "@/components/illustrations";
 import { useCases } from "@/hooks/useCases";
 import { formatDate, getDaysSince } from "@/lib/utils";
 import type { Timestamp } from "firebase/firestore";
@@ -126,7 +127,7 @@ export default function CasesPage() {
       ) : filteredCases.length === 0 ? (
         <Card className="rounded-xl">
           <CardContent className="text-center py-16 text-[hsl(var(--muted-foreground))]">
-            <User className="mx-auto h-12 w-12 mb-3 opacity-15" />
+            <EmptyCasesIllustration className="w-36 h-36 mx-auto mb-2" />
             <p className="text-base font-medium">No cases found</p>
             <p className="mt-1 text-sm">
               {search || statusFilter !== "all"

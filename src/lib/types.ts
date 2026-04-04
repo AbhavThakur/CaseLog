@@ -11,6 +11,14 @@ export interface Doctor {
   phone?: string;
   photoURL?: string;
   storageUsedBytes: number;
+  letterhead?: {
+    clinicName?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    logoBase64?: string;
+    registrationNo?: string;
+  };
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

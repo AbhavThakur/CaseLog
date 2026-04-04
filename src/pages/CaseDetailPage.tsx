@@ -123,6 +123,7 @@ export default function CaseDetailPage() {
         caseId,
         doctor?.displayName ?? "Doctor",
         30,
+        doctor?.photoURL ?? undefined,
       );
       const url = `${window.location.origin}/shared/${shareId}`;
       await navigator.clipboard.writeText(url);
@@ -380,9 +381,7 @@ export default function CaseDetailPage() {
                   variant="outline"
                   size="sm"
                   className="rounded-lg"
-                  onClick={() =>
-                    exportCasePDF(patientCase, timeline, doctor?.displayName)
-                  }
+                  onClick={() => exportCasePDF(patientCase, timeline, doctor)}
                 >
                   <FileDown className="mr-1.5 h-3.5 w-3.5" />
                   Export
@@ -1214,6 +1213,8 @@ export default function CaseDetailPage() {
           open={showDischargeForm}
           onClose={() => setShowDischargeForm(false)}
           caseId={caseId}
+          patientCase={patientCase}
+          timeline={timeline}
         />
       )}
 

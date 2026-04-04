@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import type { PatientCase, TimelineEntry } from "./types";
+import type { Doctor, PatientCase, TimelineEntry } from "./types";
 import { formatDate, formatDateTime } from "./utils";
 import type { Timestamp } from "firebase/firestore";
 
@@ -7,7 +7,75 @@ const PAGE_MARGIN = 20;
 const LINE_HEIGHT = 7;
 const CONTENT_WIDTH = 170; // A4 width (210) minus 2 margins
 
-function addHeader(doc: jsPDF, patientCase: PatientCase) {
+function addLetterhead(doc: jsPDF, doctor: Doctor): number {
+  const lh = doctor.letterhead;
+  let y = 14;
+  let textStartX = PAGE_MARGIN;
+
+  // Logo (left-aligned)
+  if (lh?.logoBase64) {
+    try {
+      doc.addImage(lh.logoBase64, "PNG", PAGE_MARGIN, 10, 22, 22);
+      textStartX = PAGE_MARGIN + 26;
+    } catch {
+      // skip if invalid image
+    }
+  }
+
+  // Clinic name
+  const clinicName = lh?.clinicName || doctor.hospital;
+  if (clinicName) {
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(30, 60, 130);
+    doc.text(clinicName, textStartX, y);
+    y += 5;
+  }
+
+  // Doctor name + specialization on one line
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(60);
+  const doctorLine = `Dr. ${doctor.displayName}${doctor.specialization ? ` — ${doctor.specialization}` : ""}`;
+  doc.text(doctorLine, textStartX, y);
+  y += 4;
+
+  // Address
+  if (lh?.address) {
+    const addrLines = doc.splitTextToSize(
+      lh.address,
+      CONTENT_WIDTH - (textStartX - PAGE_MARGIN),
+    );
+    doc.setFontSize(8);
+    doc.text(addrLines, textStartX, y);
+    y += addrLines.length * 3.5;
+  }
+
+  // Contact line: phone | email | reg
+  const contactParts: string[] = [];
+  if (lh?.phone) contactParts.push(`Ph: ${lh.phone}`);
+  if (lh?.email) contactParts.push(lh.email);
+  if (lh?.registrationNo) contactParts.push(`Reg: ${lh.registrationNo}`);
+  if (contactParts.length > 0) {
+    doc.setFontSize(8);
+    doc.text(contactParts.join("  |  "), textStartX, y);
+    y += 4;
+  }
+
+  doc.setTextColor(0);
+
+  // Divider
+  y = Math.max(y, 35);
+  doc.setDrawColor(30, 60, 130);
+  doc.setLineWidth(0.5);
+  doc.line(PAGE_MARGIN, y, 210 - PAGE_MARGIN, y);
+  doc.setLineWidth(0.2);
+  doc.setDrawColor(200);
+
+  return y + 4;
+}
+
+function addPlainHeader(doc: jsPDF, patientCase: PatientCase): number {
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   doc.text("Patient Case Summary", PAGE_MARGIN, 25);
@@ -21,9 +89,10 @@ function addHeader(doc: jsPDF, patientCase: PatientCase) {
   });
   doc.setTextColor(0);
 
-  // Divider line
   doc.setDrawColor(200);
   doc.line(PAGE_MARGIN, 36, 210 - PAGE_MARGIN, 36);
+
+  return 44;
 }
 
 function addSection(doc: jsPDF, title: string, y: number): number {
@@ -56,13 +125,32 @@ function addField(doc: jsPDF, label: string, value: string, y: number): number {
 export function exportCasePDF(
   patientCase: PatientCase,
   timeline: TimelineEntry[],
-  doctorName?: string,
+  doctor?: Doctor | null,
 ): void {
   const doc = new jsPDF();
 
-  // Header
-  addHeader(doc, patientCase);
-  let y = 44;
+  // Header — branded letterhead if available, plain otherwise
+  let y: number;
+  if (doctor?.letterhead) {
+    y = addLetterhead(doc, doctor);
+    // Sub-header with case number and date
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Patient Case Summary", PAGE_MARGIN, y);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100);
+    doc.text(
+      `${patientCase.caseNumber}  •  ${formatDateTime(new Date())}`,
+      210 - PAGE_MARGIN,
+      y,
+      { align: "right" },
+    );
+    doc.setTextColor(0);
+    y += 8;
+  } else {
+    y = addPlainHeader(doc, patientCase);
+  }
 
   // Patient Demographics
   y = addSection(doc, "Patient Demographics", y);
@@ -262,6 +350,7 @@ export function exportCasePDF(
   }
 
   // Footer
+  const doctorName = doctor?.displayName;
   if (doctorName) {
     if (y > 270) {
       doc.addPage();

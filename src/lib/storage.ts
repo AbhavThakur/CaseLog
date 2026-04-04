@@ -146,3 +146,20 @@ export function formatStorageSize(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
+
+/**
+ * Upload a profile photo for a doctor.
+ * Compresses to webp, stores under profiles/{doctorId}/photo.webp.
+ * Returns the download URL.
+ */
+export async function uploadProfilePhoto(
+  doctorId: string,
+  file: File,
+): Promise<string> {
+  const compressed = await compressImage(file);
+  const filePath = envStoragePath(`profiles/${doctorId}/photo.webp`);
+  const storageRef = ref(storage, filePath);
+
+  const snapshot = await uploadBytesResumable(storageRef, compressed);
+  return getDownloadURL(snapshot.ref);
+}

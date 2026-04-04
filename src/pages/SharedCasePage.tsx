@@ -46,6 +46,7 @@ export default function SharedCasePage() {
   const [caseData, setCaseData] = useState<PatientCase | null>(null);
   const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
   const [sharedBy, setSharedBy] = useState("");
+  const [doctorPhoto, setDoctorPhoto] = useState<string | undefined>();
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export default function SharedCasePage() {
           setCaseData(result.case);
           setTimeline(result.timeline);
           setSharedBy(result.sharedBy);
+          setDoctorPhoto(result.doctorPhotoURL);
         } else {
           setError(true);
         }
@@ -108,7 +110,14 @@ export default function SharedCasePage() {
               Read-Only
             </Badge>
           </div>
-          <p className="text-xs text-[hsl(var(--muted-foreground))]">
+          <p className="text-xs text-[hsl(var(--muted-foreground))] flex items-center gap-1.5">
+            {doctorPhoto && (
+              <img
+                src={doctorPhoto}
+                alt=""
+                className="h-5 w-5 rounded-full object-cover"
+              />
+            )}
             Shared by Dr. {sharedBy}
           </p>
         </div>
@@ -383,6 +392,25 @@ export default function SharedCasePage() {
         <p className="text-xs text-center text-[hsl(var(--muted-foreground))] pb-4">
           This is a read-only shared view. Patient data is protected.
         </p>
+
+        {/* Footer branding */}
+        <div className="border-t border-[hsl(var(--border))] pt-4 pb-6 flex flex-col items-center gap-2">
+          <div className="flex items-center gap-1.5 text-[hsl(var(--muted-foreground))]">
+            <ClipboardList className="h-4 w-4 text-[hsl(var(--primary))]" />
+            <span className="text-xs font-semibold">Powered by CaseLog</span>
+          </div>
+          <p className="text-[10px] text-[hsl(var(--muted-foreground))]/60">
+            Patient Case Tracker for Doctors
+          </p>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl text-xs mt-1"
+          >
+            <Link to="/login">Try CaseLog Free</Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

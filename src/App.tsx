@@ -12,11 +12,13 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import AdminPage from "@/pages/AdminPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import SharedCasePage from "@/pages/SharedCasePage";
+import { ReloadPrompt } from "@/components/ReloadPrompt";
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ReloadPrompt />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/shared/:shareId" element={<SharedCasePage />} />

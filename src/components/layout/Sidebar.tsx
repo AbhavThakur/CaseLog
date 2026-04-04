@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -21,7 +22,7 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user, doctor } = useAuth();
   const allItems = isAdmin
     ? [...navItems, { to: "/admin", label: "Admin", icon: Shield }]
     : navItems;
@@ -54,9 +55,31 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="px-4 py-3 border-t border-[hsl(var(--border))]">
-        <p className="text-[10px] text-[hsl(var(--muted-foreground))] text-center">
-          Patient Case Tracker
-        </p>
+        <NavLink
+          to="/profile"
+          className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-[hsl(var(--accent))] transition-colors"
+        >
+          <Avatar className="h-7 w-7">
+            <AvatarImage
+              src={doctor?.photoURL ?? user?.photoURL ?? undefined}
+            />
+            <AvatarFallback className="text-[10px]">
+              {(doctor?.displayName ?? "U")
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium truncate">
+              {doctor?.displayName ?? user?.displayName ?? "Doctor"}
+            </p>
+            <p className="text-[10px] text-[hsl(var(--muted-foreground))] truncate">
+              {doctor?.specialization ?? ""}
+            </p>
+          </div>
+        </NavLink>
       </div>
     </aside>
   );
